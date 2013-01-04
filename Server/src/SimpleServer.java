@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 public class SimpleServer {
     public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
         Class.forName("com.mysql.jdbc.Driver").newInstance();
-        Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/geofriend?user=root&password=password");
+        Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/geofriend?user=root&password=wwwwww");
         Statement stmt = connect.createStatement();
         ServerSocket server = new ServerSocket(7777);
         ExecutorService pool = Executors.newCachedThreadPool();
