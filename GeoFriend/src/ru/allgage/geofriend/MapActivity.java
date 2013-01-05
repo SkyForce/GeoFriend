@@ -25,36 +25,9 @@ public class MapActivity extends FragmentActivity {
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mMap = mapFragment.getMap();
 
-		IntentFilter filter = new IntentFilter();
-		filter.addAction("ru.allgage.geofriend.DATA_BROADCAST");
-		registerReceiver(new UpdateHandler(mMap), filter);
-
-		Monitor mon = Monitor.getInstance();
-
-		synchronized(mon) {
-			mon.notifyAll();
-		}
+		new UpdateTask(mMap).execute();
+		
 	}
 
 }
 
-class UpdateHandler extends BroadcastReceiver {
-
-	private GoogleMap gmap;
-
-	UpdateHandler(GoogleMap map) {
-		gmap = map;
-	}
-	
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		// TODO Auto-generated method stub
-		String data = intent.getStringExtra("loc");
-		String[] loc = data.split(":");
-		gmap.addMarker(new MarkerOptions()
-						.position(new LatLng(Double.parseDouble(loc[1]),Double.parseDouble(loc[2])))
-						.title(loc[0])
-						.snippet(loc[3]));
-	}
-	
-}
