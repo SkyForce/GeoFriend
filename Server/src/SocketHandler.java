@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -57,12 +58,16 @@ public class SocketHandler implements Runnable {
                 dout.writeUTF("error");
                 return;
             }
-
+            dout.flush();
             String str = din.readUTF();
+            Random rnd = new Random();
 
-            dout.writeUTF("Twice:56:56:lol");
-
-            while(true) {}
+            while(true) {
+                dout.writeUTF(String.format("Twice:%s:%s:lol", String.valueOf(rnd.nextInt(180)-90), String.valueOf(rnd.nextInt(360)-180)));
+                dout.flush();
+                din.readUTF();
+                Thread.sleep(2000);
+            }
             /**String msg="";
 
             while(!msg.equals("exit")) {
@@ -76,6 +81,8 @@ public class SocketHandler implements Runnable {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
     }

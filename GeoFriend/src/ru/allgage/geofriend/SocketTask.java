@@ -19,7 +19,7 @@ public class SocketTask extends AsyncTask<String, String, Void> {
     boolean isLogged = false;
     TextView view;
     Context parent;
-    
+    String str = "";
     SocketTask(TextView v, Context cont) {
     	view = v;
     	parent = cont;
@@ -27,10 +27,10 @@ public class SocketTask extends AsyncTask<String, String, Void> {
     
 	
 	@Override
-	public synchronized Void doInBackground(String... str) {
+	public Void doInBackground(String... str) {
 		// TODO Auto-generated method stub
 		try {
-			sock = new Socket("192.168.1.103",7777);
+			sock = new Socket("192.168.1.102",7777);
 			dout = new DataOutputStream(sock.getOutputStream());
 			din = new DataInputStream(sock.getInputStream());
 			if(str.length == 2) {
@@ -44,25 +44,31 @@ public class SocketTask extends AsyncTask<String, String, Void> {
 				dout.writeUTF(str[1]);
 				dout.writeUTF(str[2]);
 			}
+			dout.flush();
 			String res = din.readUTF();
 			if(res.equals("error")) {
 				publishProgress(res);
 				return null;
 			}
 			else {
-				publishProgress(res);
+				Monitor mon = Monitor.getInstance();
+				synchronized(mon) {
+					publishProgress(res);
+					mon.wait();
+				}
 			}
-			
-			wait();
 			dout.writeUTF("ready");
-			//while(true) {
+			dout.flush();
+			while(true) {
 				String data = din.readUTF();
 				publishProgress("update",data);
-			//}
+				dout.writeUTF("ok");
+				dout.flush();
+			}
 
 		}
 		catch (IOException e) {
-		
+			e.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,7 +86,6 @@ public class SocketTask extends AsyncTask<String, String, Void> {
 	
 	@Override
 	protected void onProgressUpdate(String... v) {
-		view.setText(v[0]);
 		if(v[0].equals("logged in")) {
 			Intent intent = new Intent(parent, MapActivity.class);
 			parent.startActivity(intent);

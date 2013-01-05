@@ -50,9 +50,6 @@ public class LoginActivity extends Activity {
 		String s3 = null;
 		
 		task = new SocketTask((TextView) findViewById(R.id.textView1), this);
-		IntentFilter filter = new IntentFilter();
-		filter.addAction("ru.allgage.geofriend.WAIT");
-		registerReceiver(new WaitHandler(task), filter);
 		
 		if(checked) {
 			s3 = ((EditText) findViewById(R.id.editText3)).getText().toString();
@@ -62,22 +59,4 @@ public class LoginActivity extends Activity {
 			task.execute(s1,s2);
 		}
 	}
-}
-
-class WaitHandler extends BroadcastReceiver {
-
-	private SocketTask task;
-
-	WaitHandler(SocketTask t) {
-		task = t;
-	}
-	
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		// TODO Auto-generated method stub
-		synchronized(task) {
-			task.notifyAll();
-		}
-	}
-	
 }

@@ -22,16 +22,18 @@ public class MapActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_map);
 		 
-		mMap = SupportMapFragment.newInstance().getMap();
+		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+		mMap = mapFragment.getMap();
 
 		IntentFilter filter = new IntentFilter();
 		filter.addAction("ru.allgage.geofriend.DATA_BROADCAST");
 		registerReceiver(new UpdateHandler(mMap), filter);
-		
-		Intent dataIntent = new Intent();
-		dataIntent.setAction("ru.allgage.geofriend.WAIT");
-		dataIntent.putExtra("lol", "lol");
-		sendBroadcast(dataIntent);
+
+		Monitor mon = Monitor.getInstance();
+
+		synchronized(mon) {
+			mon.notifyAll();
+		}
 	}
 
 }
