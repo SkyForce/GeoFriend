@@ -20,7 +20,7 @@ import android.text.TextWatcher;
 
 public class LoginActivity extends Activity {
 	
-	SocketTask task;
+	LoginTask task;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class LoginActivity extends Activity {
 		String s2 = ((EditText) findViewById(R.id.editText2)).getText().toString();
 		String s3 = null;
 		
-		task = new SocketTask((TextView) findViewById(R.id.textView1), this);
+		task = new LoginTask((TextView) findViewById(R.id.textView1), this);
 		
 		if(checked) {
 			s3 = ((EditText) findViewById(R.id.editText3)).getText().toString();
