@@ -1,8 +1,9 @@
+import ru.allgage.geofiend.server.UserDAO;
+
 import java.io.*;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Random;
 
 /**
@@ -15,13 +16,14 @@ import java.util.Random;
 public class SocketHandler implements Runnable {
     Socket sock;
     boolean isLogged = false;
-    Statement stmt;
+    UserDAO userDAO;
 
-    SocketHandler(Socket sock, Statement stmt) {
+    SocketHandler(Socket sock, UserDAO userDAO) {
         this.sock = sock;
-        this.stmt = stmt;
+        this.userDAO = userDAO;
         System.out.println(sock.getInetAddress().toString());
     }
+
     public void run() {
         try (Socket socket = sock;
              DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
@@ -32,23 +34,14 @@ public class SocketHandler implements Runnable {
             if(auth.equals("login")) {
                 String user = din.readUTF();
                 String pass = din.readUTF();
-                if(user != null && pass != null) {
-                    ResultSet rs = stmt.executeQuery("SELECT password FROM users WHERE login = '"+user+"'");
-                    while(rs.next()) {
-                        String res = rs.getString(1);
-                        if(res != null && pass.equals(res)) isLogged = true;
-                    }
-                }
-            }
-            else if(auth.equals("register")) {
+
+                isLogged = userDAO.exist(user, pass);
+            } else if(auth.equals("register")) {
                 String user = din.readUTF();
                 String pass = din.readUTF();
                 String email = din.readUTF();
-                ResultSet rs = stmt.executeQuery(String.format("SELECT password FROM users WHERE login = '%s'",user));
-                if(!rs.next()) {
-                    int n = stmt.executeUpdate(String.format("INSERT INTO users VALUES('%s', '%s', '%s')", user, pass, email));
-                    if(n > 0) isLogged = true;
-                }
+
+                isLogged = userDAO.create(user, pass, email);
             }
 
             if(isLogged) {
