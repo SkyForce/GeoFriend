@@ -1,4 +1,4 @@
-import ru.allgage.geofiend.server.UserDAO;
+import ru.allgage.geofriend.server.UserDAO;
 
 import java.io.IOException;
 import java.net.ServerSocket;

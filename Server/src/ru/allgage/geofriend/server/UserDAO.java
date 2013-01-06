@@ -1,4 +1,4 @@
-package ru.allgage.geofiend.server;
+package ru.allgage.geofriend.server;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

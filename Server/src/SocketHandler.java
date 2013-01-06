@@ -1,8 +1,7 @@
-import ru.allgage.geofiend.server.UserDAO;
+import ru.allgage.geofriend.server.UserDAO;
 
 import java.io.*;
 import java.net.Socket;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
 
