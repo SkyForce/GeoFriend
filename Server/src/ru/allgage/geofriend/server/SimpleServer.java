@@ -1,4 +1,4 @@
-import ru.allgage.geofriend.server.UserDAO;
+package ru.allgage.geofriend.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
 public class SimpleServer {
     public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
         Class.forName("com.mysql.jdbc.Driver").newInstance();
-        Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/geofriend?user=root&password=password");
+        Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/test?user=root&password=root");
         UserDAO userDAO = new UserDAO(connect);
 
         ServerSocket server = new ServerSocket(7777);

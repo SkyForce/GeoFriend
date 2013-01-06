@@ -1,3 +1,5 @@
+package ru.allgage.geofriend.server;
+
 import ru.allgage.geofriend.server.UserDAO;
 
 import java.io.*;
