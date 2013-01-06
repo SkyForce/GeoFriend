@@ -1,8 +1,8 @@
 package ru.allgage.geofriend.server;
 
-import ru.allgage.geofriend.server.UserDAO;
-
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.Random;

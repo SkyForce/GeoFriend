@@ -1,32 +1,42 @@
 package ru.allgage.geofriend.server;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Никита
- * Date: 15.12.12
- * Time: 23:29
- * To change this template use File | Settings | File Templates.
+ * Main server class.
  */
 public class SimpleServer {
-    public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
-        Connection connect = DriverManager.getConnection("jdbc:mysql://localhost/test?user=root&password=root");
-        UserDAO userDAO = new UserDAO(connect);
+	public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
+		Properties properties = new Properties();
+		try (InputStream stream = new FileInputStream("server.properties")) {
+			properties.load(stream);
+		} catch (IOException exception) {
+			exception.printStackTrace();
+			System.exit(1);
+		}
 
-        ServerSocket server = new ServerSocket(7777);
-        ExecutorService pool = Executors.newCachedThreadPool();
-        while(true) {
-            Socket sock = server.accept();
-            pool.submit(new SocketHandler(sock, userDAO));
-        }
-    }
+		String connectionString = properties.getProperty("connection_string");
+		int port = Integer.parseInt(properties.getProperty("port"));
+
+		Class.forName("com.mysql.jdbc.Driver").newInstance();
+		Connection connect = DriverManager.getConnection(connectionString);
+		UserDAO userDAO = new UserDAO(connect);
+
+		ServerSocket server = new ServerSocket(port);
+		ExecutorService pool = Executors.newCachedThreadPool();
+		while(true) {
+			Socket sock = server.accept();
+			pool.submit(new SocketHandler(sock, userDAO));
+		}
+	}
 }
