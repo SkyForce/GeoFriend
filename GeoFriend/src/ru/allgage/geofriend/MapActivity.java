@@ -25,8 +25,9 @@ public class MapActivity extends FragmentActivity {
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mMap = mapFragment.getMap();
 
-		new UpdateTask(mMap).execute();
-		
+		if(mMap != null) {
+			new UpdateTask(mMap).execute();
+		}
 	}
 
 }
