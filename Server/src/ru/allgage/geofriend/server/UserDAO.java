@@ -12,6 +12,7 @@ public class UserDAO {
 
 	/**
 	 * Create data access object instance.
+	 *
 	 * @param connection server connection.
 	 */
 	public UserDAO(Connection connection) {
@@ -20,7 +21,8 @@ public class UserDAO {
 
 	/**
 	 * Check whether a user with specified login and password exist in the database.
-	 * @param login user name.
+	 *
+	 * @param login    user name.
 	 * @param password user password.
 	 * @return true if user exist.
 	 * @throws SQLException thrown on query fail.
@@ -37,9 +39,10 @@ public class UserDAO {
 
 	/**
 	 * Creates the user.
-	 * @param login user name.
+	 *
+	 * @param login    user name.
 	 * @param password user password.
-	 * @param email user e-mail.
+	 * @param email    user e-mail.
 	 * @return true if the user was created; false otherwise.
 	 */
 	public boolean create(String login, String password, String email) {

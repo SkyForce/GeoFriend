@@ -34,7 +34,7 @@ public class SimpleServer {
 
 		ServerSocket server = new ServerSocket(port);
 		ExecutorService pool = Executors.newCachedThreadPool();
-		while(true) {
+		while (true) {
 			Socket sock = server.accept();
 			pool.submit(new SocketHandler(sock, userDAO));
 		}
