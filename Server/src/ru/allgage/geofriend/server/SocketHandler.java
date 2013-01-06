@@ -2,31 +2,35 @@ package ru.allgage.geofriend.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.Random;
 
 /**
- * Created with IntelliJ IDEA.
- * User: Никита
- * Date: 30.12.12
- * Time: 21:10
- * To change this template use File | Settings | File Templates.
+ * Client socket handler thread.
  */
 public class SocketHandler implements Runnable {
-	Socket sock;
-	boolean isLogged = false;
-	UserDAO userDAO;
+	final Socket socket;
+	final UserDAO userDAO;
 
-	SocketHandler(Socket sock, UserDAO userDAO) {
-		this.sock = sock;
+	boolean isLogged = false;
+
+	/**
+	 * Creates a socket handler.
+	 * @param socket client socket.
+	 * @param userDAO user data access object.
+	 */
+	SocketHandler(Socket socket, UserDAO userDAO) {
+		this.socket = socket;
 		this.userDAO = userDAO;
-		System.out.println(sock.getInetAddress().toString());
+		System.out.println(socket.getInetAddress().toString());
 	}
 
+	/**
+	 * Runs the handler.
+	 */
+	@Override
 	public void run() {
-		try (Socket socket = sock;
+		try (Socket socket = this.socket;
 			 DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 			 DataInputStream din = new DataInputStream(socket.getInputStream())) {
 
@@ -62,22 +66,8 @@ public class SocketHandler implements Runnable {
 				din.readUTF();
 				Thread.sleep(2000);
 			}
-			/**String msg="";
-
-			while(!msg.equals("exit")) {
-				msg = din.readUTF();
-				System.out.println(msg);
-				dout.writeUTF("Got your msg "+msg);
-				dout.flush();
-			}**/
-
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
-
 	}
 }
