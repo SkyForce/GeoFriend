@@ -2,6 +2,7 @@ package ru.allgage.geofriend.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Random;
 
@@ -9,10 +10,11 @@ import java.util.Random;
  * Client socket handler thread.
  */
 public class SocketHandler implements Runnable {
+	final String ERROR_HEADER = "error";
+	final String LOGGED_IN_HEADER = "logged in";
+
 	final Socket socket;
 	final UserDAO userDAO;
-
-	boolean isLogged = false;
 
 	/**
 	 * Creates a socket handler.
@@ -40,37 +42,93 @@ public class SocketHandler implements Runnable {
 				String user = din.readUTF();
 				String pass = din.readUTF();
 
-				isLogged = userDAO.exist(user, pass);
+				if (!userDAO.exist(user, pass)) {
+					writeError(dout, "invalid login or password");
+					return;
+				}
 			} else if (auth.equals("register")) {
 				String user = din.readUTF();
 				String pass = din.readUTF();
 				String email = din.readUTF();
 
-				isLogged = userDAO.create(user, pass, email);
-			}
-
-			if (isLogged) {
-				dout.writeUTF("logged in");
+				if (!userDAO.create(user, pass, email)) {
+					writeError(dout, "cannot register user");
+					return;
+				}
 			} else {
-				dout.writeUTF("error");
+				writeError(dout, "invalid login sequence");
 				return;
 			}
-			dout.flush();
-			String str = din.readUTF();
+
+			writeLoggedIn(dout);
+
+			String str = din.readUTF(); // TODO: investigate what is it.
 			Random rnd = new Random();
 
 			while (true) {
-				dout.writeUTF(
-						String.format(
-								"Twice:%s:%s:lol",
-								String.valueOf(rnd.nextInt(180) - 90),
-								String.valueOf(rnd.nextInt(360) - 180)));
-				dout.flush();
-				din.readUTF();
+				writeStatus(dout, "Twice", rnd.nextInt(180) - 90, rnd.nextInt(360) - 180, "lol");
+				din.readUTF(); // TODO: investigate what is it.
 				Thread.sleep(2000);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * Writes one or many strings to the stream, flushing it afterwards.
+	 *
+	 * @param stream   data stream.
+	 * @param messages messages to write.
+	 * @throws IOException thrown in case something going wrong.
+	 */
+	private void writeMessages(DataOutputStream stream, String... messages) throws IOException {
+		for (String message : messages) {
+			stream.writeUTF(message);
+		}
+
+		stream.flush();
+	}
+
+	/**
+	 * Writes the proper-formed error to the data stream.
+	 *
+	 * @param stream  data stream.
+	 * @param message error message.
+	 * @throws IOException thrown in case something going wrong.
+	 */
+	private void writeError(DataOutputStream stream, String message) throws IOException {
+		writeMessages(stream, ERROR_HEADER, message);
+	}
+
+	/**
+	 * Writes the "logged in" message to the data stream.
+	 *
+	 * @param stream data stream.
+	 * @throws IOException thrown in case something going wrong.
+	 */
+	private void writeLoggedIn(DataOutputStream stream) throws IOException {
+		writeMessages(stream, LOGGED_IN_HEADER);
+	}
+
+	/**
+	 * Writes the status message to the data stream.
+	 *
+	 * @param stream    data stream.
+	 * @param userName  user name of the status owner.
+	 * @param latitude  latitude of the message.
+	 * @param longitude longtitude of the message.
+	 * @param message   the message text.
+	 * @throws IOException thrown in case something going wrong.
+	 */
+	private void writeStatus(
+			DataOutputStream stream,
+			String userName,
+			double latitude,
+			double longitude,
+			String message) throws IOException {
+		// TODO: Proper format double.
+		String datagram = String.format("%s:%d:%d:%s", userName, (int) latitude, (int) longitude, message);
+		writeMessages(stream, datagram);
 	}
 }
