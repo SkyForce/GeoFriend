@@ -2,6 +2,7 @@ package ru.allgage.geofriend.server;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -33,7 +34,9 @@ public class UserDAO {
 			statement.setString(1, login);
 			statement.setString(2, password);
 
-			return statement.execute();
+			try (ResultSet resultSet = statement.executeQuery()) {
+				return resultSet.next();
+			}
 		}
 	}
 
