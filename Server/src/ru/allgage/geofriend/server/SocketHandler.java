@@ -15,18 +15,21 @@ public class SocketHandler implements Runnable {
 
 	final Socket socket;
 	final UserDAO userDAO;
+	final StatusDAO statusDAO;
 
 	User loggedUser;
 
 	/**
 	 * Creates a socket handler.
 	 *
-	 * @param socket  client socket.
-	 * @param userDAO user data access object.
+	 * @param socket    client socket.
+	 * @param userDAO   user data access object.
+	 * @param statusDAO status data access object.
 	 */
-	SocketHandler(Socket socket, UserDAO userDAO) {
+	SocketHandler(Socket socket, UserDAO userDAO, StatusDAO statusDAO) {
 		this.socket = socket;
 		this.userDAO = userDAO;
+		this.statusDAO = statusDAO;
 		System.out.println(socket.getInetAddress().toString());
 	}
 
@@ -70,9 +73,22 @@ public class SocketHandler implements Runnable {
 			Random rnd = new Random();
 
 			while (true) {
-				writeStatus(dout, "Twice", rnd.nextInt(180) - 90, rnd.nextInt(360) - 180, "lol");
-				din.readUTF(); // TODO: investigate what is it.
-				Thread.sleep(2000);
+				String command = din.readUTF();
+				if (command.equals("updateStatus")) {
+					double lat = Double.parseDouble(din.readUTF());
+					double lng = Double.parseDouble(din.readUTF());
+					String status = din.readUTF();
+					if (statusDAO.create(loggedUser, lat, lng, status)) {
+						writeMessages(dout, "success");
+					} else {
+						writeError(dout, "error updating status");
+					}
+				} else if(command.equals("updateAllStatuses")) {
+					// TODO: write code here.
+				} else {
+					writeError(dout, "invalid command sequence");
+					return;
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

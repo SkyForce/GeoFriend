@@ -31,12 +31,13 @@ public class SimpleServer {
 		Class.forName("com.mysql.jdbc.Driver").newInstance();
 		Connection connect = DriverManager.getConnection(connectionString);
 		UserDAO userDAO = new UserDAO(connect);
+		StatusDAO statusDAO = new StatusDAO(connect);
 
 		ServerSocket server = new ServerSocket(port);
 		ExecutorService pool = Executors.newCachedThreadPool();
 		while (true) {
 			Socket sock = server.accept();
-			pool.submit(new SocketHandler(sock, userDAO));
+			pool.submit(new SocketHandler(sock, userDAO, statusDAO));
 		}
 	}
 }

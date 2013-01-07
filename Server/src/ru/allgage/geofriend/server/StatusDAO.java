@@ -29,7 +29,7 @@ public class StatusDAO {
 	 * @param text      message text.
 	 * @throws SQLException thrown on query fail.
 	 */
-	public void create(User user, double latitude, double longitude, String text) throws SQLException {
+	public boolean create(User user, double latitude, double longitude, String text) throws SQLException {
 		try (PreparedStatement statement = connection.prepareStatement(
 				"INSERT INTO statuses (user_id, time, status, lat, lng) VALUES (?, ?, ?, ?, ?)")) {
 			statement.setInt(1, user.getId());
@@ -38,7 +38,7 @@ public class StatusDAO {
 			statement.setDouble(4, latitude);
 			statement.setDouble(5, longitude);
 
-			statement.execute();
+			return statement.executeUpdate() > 0;
 		}
 	}
 }
