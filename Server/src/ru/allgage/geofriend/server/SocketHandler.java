@@ -121,7 +121,7 @@ public class SocketHandler implements Runnable {
 	 * @param stream    data stream.
 	 * @param userName  user name of the status owner.
 	 * @param latitude  latitude of the message.
-	 * @param longitude longtitude of the message.
+	 * @param longitude longitude of the message.
 	 * @param message   the message text.
 	 * @throws IOException thrown in case something going wrong.
 	 */
