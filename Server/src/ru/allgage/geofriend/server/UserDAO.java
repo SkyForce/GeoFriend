@@ -21,21 +21,26 @@ public class UserDAO {
 	}
 
 	/**
-	 * Check whether a user with specified login and password exist in the database.
+	 * Load specified user from the database.
 	 *
 	 * @param login    user name.
 	 * @param password user password.
-	 * @return true if user exist.
+	 * @return user if user exists; null otherwise.
 	 * @throws SQLException thrown on query fail.
 	 */
-	public boolean exist(String login, String password) throws SQLException {
+	public User load(String login, String password) throws SQLException {
 		try (PreparedStatement statement = connection.prepareStatement(
-				"SELECT * FROM users WHERE login = ? AND password = MD5(?)")) {
+				"SELECT id, login, email FROM users WHERE login = ? AND password = MD5(?)")) {
 			statement.setString(1, login);
 			statement.setString(2, password);
 
 			try (ResultSet resultSet = statement.executeQuery()) {
-				return resultSet.next();
+				resultSet.next();
+				Integer id = resultSet.getInt("id");
+				String userLogin = resultSet.getString("login");
+				String email = resultSet.getString("email");
+
+				return new User(id, userLogin, email);
 			}
 		}
 	}
@@ -46,19 +51,23 @@ public class UserDAO {
 	 * @param login    user name.
 	 * @param password user password.
 	 * @param email    user e-mail.
-	 * @return true if the user was created; false otherwise.
+	 * @return created user; null if user was not created.
 	 */
-	public boolean create(String login, String password, String email) {
+	public User create(String login, String password, String email) {
 		try (PreparedStatement statement = connection.prepareStatement(
 				"INSERT INTO users (login, password, email) VALUES(?, MD5(?), ?)")) {
 			statement.setString(1, login);
 			statement.setString(2, password);
 			statement.setString(3, email);
 
-			return statement.executeUpdate() > 0;
+			if (statement.executeUpdate() > 0) {
+				return load(login, password); // TODO: optimize
+			} else {
+				return null;
+			}
 		} catch (SQLException exception) {
 			exception.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 }

@@ -16,6 +16,8 @@ public class SocketHandler implements Runnable {
 	final Socket socket;
 	final UserDAO userDAO;
 
+	User loggedUser;
+
 	/**
 	 * Creates a socket handler.
 	 *
@@ -42,7 +44,8 @@ public class SocketHandler implements Runnable {
 				String user = din.readUTF();
 				String pass = din.readUTF();
 
-				if (!userDAO.exist(user, pass)) {
+				loggedUser = userDAO.load(user, pass);
+				if (loggedUser == null) {
 					writeError(dout, "invalid login or password");
 					return;
 				}
@@ -51,7 +54,8 @@ public class SocketHandler implements Runnable {
 				String pass = din.readUTF();
 				String email = din.readUTF();
 
-				if (!userDAO.create(user, pass, email)) {
+				loggedUser = userDAO.create(user, pass, email);
+				if (loggedUser == null) {
 					writeError(dout, "cannot register user");
 					return;
 				}
