@@ -4,17 +4,17 @@ package ru.allgage.geofriend.server;
  * User class.
  */
 public class User {
-	private Integer id;
+	private int id;
 	private String login;
 	private String email;
 
-	User(Integer id, String login, String email) {
+	User(int id, String login, String email) {
 		this.id = id;
 		this.login = login;
 		this.email = email;
 	}
 
-	Integer getId() {
+	int getId() {
 		return id;
 	}
 
