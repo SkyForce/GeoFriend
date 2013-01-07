@@ -21,7 +21,6 @@ public class UpdateTask extends AsyncTask<Void, String, Void> {
 		// TODO Auto-generated constructor stub
 		map = mMap;
 		din = TaskSocket.in;
-		dout = TaskSocket.out;
 	}
 
 	@Override
@@ -30,13 +29,11 @@ public class UpdateTask extends AsyncTask<Void, String, Void> {
 		
 		try {
 			synchronized(TaskSocket.socket) {
-				dout.writeUTF("ready");
-				dout.flush();
+				TaskSocket.writeMessages("ready");
 				while(true) {
 					String data = din.readUTF();
 					publishProgress(data);
-					dout.writeUTF("ok");
-					dout.flush();
+					TaskSocket.writeMessages("ok");
 				}
 			}
 		} catch (IOException e) {

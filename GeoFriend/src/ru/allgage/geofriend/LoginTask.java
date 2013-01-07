@@ -30,24 +30,17 @@ public class LoginTask extends AsyncTask<String, String, String> {
 	public String doInBackground(String... str) {
 		// TODO Auto-generated method stub
 		try {
-			sock = new Socket("192.168.1.103",7777);
-			TaskSocket.setSocket(sock);
+			sock = new Socket("192.168.1.102",7777);
 			synchronized(sock) {
-				dout = TaskSocket.out;
+				TaskSocket.setSocket(sock);
 				din = TaskSocket.in;
 				publishProgress("sending data to server");
 				if(str.length == 2) {
-					dout.writeUTF("login");
-					dout.writeUTF(str[0]);
-					dout.writeUTF(str[1]);
+					TaskSocket.writeMessages("login", str[0], str[1]);
 				}
 				else {
-					dout.writeUTF("register");
-					dout.writeUTF(str[0]);
-					dout.writeUTF(str[1]);
-					dout.writeUTF(str[2]);
+					TaskSocket.writeMessages("register", str[0], str[1], str[2]);
 				}
-				dout.flush();
 				String res = din.readUTF();
 				return res;
 			}
