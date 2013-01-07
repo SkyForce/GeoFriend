@@ -12,6 +12,7 @@ import java.util.Random;
 public class SocketHandler implements Runnable {
 	final String ERROR_HEADER = "error";
 	final String LOGGED_IN_HEADER = "logged in";
+	final String USER_STATUS_HEADER = "status";
 
 	final Socket socket;
 	final UserDAO userDAO;
@@ -84,7 +85,9 @@ public class SocketHandler implements Runnable {
 						writeError(dout, "error updating status");
 					}
 				} else if(command.equals("updateAllStatuses")) {
-					// TODO: write code here.
+					for (Status status : statusDAO.getStatuses()) {
+						writeStatus(dout, status);
+					}
 				} else {
 					writeError(dout, "invalid command sequence");
 					return;
@@ -134,21 +137,16 @@ public class SocketHandler implements Runnable {
 	/**
 	 * Writes the status message to the data stream.
 	 *
-	 * @param stream    data stream.
-	 * @param userName  user name of the status owner.
-	 * @param latitude  latitude of the message.
-	 * @param longitude longitude of the message.
-	 * @param message   the message text.
+	 * @param stream data stream.
+	 * @param status user status.
 	 * @throws IOException thrown in case something going wrong.
 	 */
-	private void writeStatus(
-			DataOutputStream stream,
-			String userName,
-			double latitude,
-			double longitude,
-			String message) throws IOException {
-		// TODO: Proper format double.
-		String datagram = String.format("%s:%d:%d:%s", userName, (int) latitude, (int) longitude, message);
-		writeMessages(stream, datagram);
+	private void writeStatus(DataOutputStream stream, Status status) throws IOException {
+		stream.writeUTF(USER_STATUS_HEADER);
+		stream.writeUTF(status.getUser().getLogin());
+		stream.writeDouble(status.getLatitude());
+		stream.writeDouble(status.getLongitude());
+		stream.writeUTF(status.getText());
+		stream.flush();
 	}
 }

@@ -2,8 +2,11 @@ package ru.allgage.geofriend.server;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Status data access object.
@@ -39,6 +42,49 @@ public class StatusDAO {
 			statement.setDouble(5, longitude);
 
 			return statement.executeUpdate() > 0;
+		}
+	}
+
+	/**
+	 * Returns actual statuses of all users.
+	 *
+	 * @return list with statuses.
+	 * @throws SQLException thrown on query fail.
+	 */
+	public List<Status> getStatuses() throws SQLException {
+		try (PreparedStatement statement = connection.prepareStatement(
+				"SELECT " +
+						"users.id AS user_id, " +
+						"users.login AS login, " +
+						"users.email AS email, " +
+						"statuses.id AS status_id, " +
+						"statuses.time AS time, " +
+						"statuses.lat AS lat, " +
+						"statuses.lng AS lng, " +
+						"statuses.status AS text " +
+						"FROM statuses " +
+						"JOIN users ON (statuses.user_id = users.id)")) {
+			// TODO: GROUP BY clause for status filtering.
+			try (ResultSet resultSet = statement.executeQuery()) {
+				List<Status> result = new ArrayList<>();
+				while (resultSet.next()) {
+					int userId = resultSet.getInt("user_id");
+					String login = resultSet.getString("login");
+					String email = resultSet.getString("email");
+					int statusId = resultSet.getInt("status_id");
+					java.sql.Date dateTime = resultSet.getDate("time");
+					double latitude = resultSet.getDouble("lat");
+					double longitude = resultSet.getDouble("lng");
+					String text = resultSet.getString("text");
+
+					User user = new User(userId, login, email);
+					Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
+
+					result.add(status);
+				}
+
+				return result;
+			}
 		}
 	}
 }
