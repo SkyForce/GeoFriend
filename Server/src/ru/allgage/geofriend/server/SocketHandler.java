@@ -76,8 +76,8 @@ public class SocketHandler implements Runnable {
 			while (true) {
 				String command = din.readUTF();
 				if (command.equals("updateStatus")) {
-					double lat = Double.parseDouble(din.readUTF());
-					double lng = Double.parseDouble(din.readUTF());
+					double lat = din.readDouble();
+					double lng = din.readDouble();
 					String status = din.readUTF();
 					if (statusDAO.create(loggedUser, lat, lng, status)) {
 						writeMessages(dout, "success");
