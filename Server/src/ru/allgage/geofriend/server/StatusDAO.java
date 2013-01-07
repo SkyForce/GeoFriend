@@ -1,9 +1,6 @@
 package ru.allgage.geofriend.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +33,7 @@ public class StatusDAO {
 		try (PreparedStatement statement = connection.prepareStatement(
 				"INSERT INTO statuses (user_id, time, status, lat, lng) VALUES (?, ?, ?, ?, ?)")) {
 			statement.setInt(1, user.getId());
-			statement.setDate(2, SQLHelper.convertDate(new Date()));
+			statement.setTimestamp(2, SQLHelper.convertDate(new Date()));
 			statement.setString(3, text);
 			statement.setDouble(4, latitude);
 			statement.setDouble(5, longitude);
@@ -72,7 +69,7 @@ public class StatusDAO {
 					String login = resultSet.getString("login");
 					String email = resultSet.getString("email");
 					int statusId = resultSet.getInt("status_id");
-					java.sql.Date dateTime = resultSet.getDate("time");
+					Timestamp dateTime = resultSet.getTimestamp("time");
 					double latitude = resultSet.getDouble("lat");
 					double longitude = resultSet.getDouble("lng");
 					String text = resultSet.getString("text");

@@ -1,17 +1,18 @@
 package ru.allgage.geofriend.server;
 
-import java.sql.Date;
+import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * SQL helper methods.
  */
 public abstract class SQLHelper {
 	/**
-	 * Converts java.util.Date to java.sql.Date.
+	 * Converts java.util.Date to java.sql.Timestamp.
 	 * @param date java.util.Date instance.
-	 * @return java.sql.Date instance.
+	 * @return java.sql.Timestamp instance.
 	 */
-	public static Date convertDate(java.util.Date date) {
-		return new Date(date.getTime());
+	public static Timestamp convertDate(Date date) {
+		return new Timestamp(date.getTime());
 	}
 }
