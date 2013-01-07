@@ -1,11 +1,17 @@
 package ru.allgage.geofriend.server;
 
+import java.sql.Date;
+
 /**
- * Created with IntelliJ IDEA.
- * User: ForNeVeR
- * Date: 07.01.13
- * Time: 14:53
- * To change this template use File | Settings | File Templates.
+ * SQL helper methods.
  */
-public class SQLHelper {
+public abstract class SQLHelper {
+	/**
+	 * Converts java.util.Date to java.sql.Date.
+	 * @param date java.util.Date instance.
+	 * @return java.sql.Date instance.
+	 */
+	public static Date convertDate(java.util.Date date) {
+		return new Date(date.getTime());
+	}
 }
