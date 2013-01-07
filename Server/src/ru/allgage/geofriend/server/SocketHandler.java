@@ -70,7 +70,6 @@ public class SocketHandler implements Runnable {
 
 			writeLoggedIn(dout);
 
-			String str = din.readUTF(); // TODO: investigate what is it.
 			Random rnd = new Random();
 
 			while (true) {
