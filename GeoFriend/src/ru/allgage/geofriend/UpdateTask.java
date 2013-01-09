@@ -11,7 +11,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import android.os.AsyncTask;
 
 
-public class UpdateTask extends AsyncTask<Void, String, Void> {
+public class UpdateTask extends AsyncTask<Void, Object, Void> {
 
 	private GoogleMap map;
 	DataOutputStream dout;
@@ -29,11 +29,14 @@ public class UpdateTask extends AsyncTask<Void, String, Void> {
 		
 		try {
 			synchronized(TaskSocket.socket) {
-				TaskSocket.writeMessages("ready");
-				while(true) {
-					String data = din.readUTF();
-					publishProgress(data);
-					TaskSocket.writeMessages("ok");
+				TaskSocket.writeMessages("updateAllStatuses");
+				String isEnd;
+				while(!(isEnd = din.readUTF()).equals("end")) {
+					String login = din.readUTF();
+					double lat = din.readDouble();
+					double lng = din.readDouble();
+					String txt = din.readUTF();
+					publishProgress(login, lat, lng, txt);
 				}
 			}
 		} catch (IOException e) {
@@ -45,12 +48,11 @@ public class UpdateTask extends AsyncTask<Void, String, Void> {
 		return null;
 	}
 	
-	protected void onProgressUpdate(String... data) {
-		String[] loc = data[0].split(":");
+	protected void onProgressUpdate(Object... status) {
 		map.addMarker(new MarkerOptions()
-						.position(new LatLng(Double.parseDouble(loc[1]),Double.parseDouble(loc[2])))
-						.title(loc[0])
-						.snippet(loc[3]));
+						.position(new LatLng((Double)status[1],(Double)status[2]))
+						.title((String)status[0])
+						.snippet((String)status[3]));
     }
 
 }

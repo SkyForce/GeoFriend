@@ -14,7 +14,6 @@ public class SendTask extends AsyncTask<Object, String, String> {
 		synchronized(TaskSocket.socket) {
 			try {
 				TaskSocket.out.writeUTF("updateStatus");
-				double t = (Double)arg[0];
 				TaskSocket.out.writeDouble((Double)arg[0]);
 				TaskSocket.out.writeDouble((Double)arg[1]);
 				TaskSocket.out.writeUTF((String)arg[2]);

@@ -84,4 +84,43 @@ public class StatusDAO {
 			}
 		}
 	}
+
+    public List<Status> getOnlineStatuses() throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT " +
+                        "users.id AS user_id, " +
+                        "users.login AS login, " +
+                        "users.email AS email, " +
+                        "statuses.id AS status_id, " +
+                        "MAX(statuses.time) AS time, " +
+                        "statuses.lat AS lat, " +
+                        "statuses.lng AS lng, " +
+                        "statuses.status AS text " +
+                        "FROM statuses " +
+                        "JOIN users ON (statuses.user_id = users.id) " +
+                        "WHERE users.isonline = 1 " +
+                        "GROUP BY users.id" )) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                List<Status> result = new ArrayList<>();
+                while (resultSet.next()) {
+                    int userId = resultSet.getInt("user_id");
+                    String login = resultSet.getString("login");
+                    String email = resultSet.getString("email");
+                    int statusId = resultSet.getInt("status_id");
+                    Timestamp dateTime = resultSet.getTimestamp("time");
+                    double latitude = resultSet.getDouble("lat");
+                    double longitude = resultSet.getDouble("lng");
+                    String text = resultSet.getString("text");
+
+                    User user = new User(userId, login, email);
+                    Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
+
+                    result.add(status);
+                }
+
+                return result;
+            }
+        }
+
+    }
 }

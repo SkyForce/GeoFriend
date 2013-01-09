@@ -1,9 +1,6 @@
 package ru.allgage.geofriend.server;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 /**
  * User data access object.
@@ -40,6 +37,10 @@ public class UserDAO {
 				String userLogin = resultSet.getString("login");
 				String email = resultSet.getString("email");
 
+                try(Statement st = connection.createStatement()) {
+                    st.executeUpdate("UPDATE users SET isonline = 1 WHERE id = "+String.valueOf(id));
+                }
+
 				return new User(id, userLogin, email);
 			}
 		}
@@ -70,4 +71,21 @@ public class UserDAO {
 			return null;
 		}
 	}
+
+    public boolean clearOnlines() throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE users SET isonline = 0")) {
+            return statement.executeUpdate() > 0;
+        }
+    }
+
+    public boolean setOffline(int id){
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE users SET isonline = 0 WHERE id = "+String.valueOf(id))) {
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

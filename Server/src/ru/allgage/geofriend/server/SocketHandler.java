@@ -68,6 +68,7 @@ public class SocketHandler implements Runnable {
 				return;
 			}
 
+
 			writeLoggedIn(dout);
 
 			Random rnd = new Random();
@@ -84,9 +85,10 @@ public class SocketHandler implements Runnable {
 						writeError(dout, "error updating status");
 					}
 				} else if(command.equals("updateAllStatuses")) {
-					for (Status status : statusDAO.getStatuses()) {
+					for (Status status : statusDAO.getOnlineStatuses()) {
 						writeStatus(dout, status);
 					}
+                    writeMessages(dout, "end");
 				} else {
 					writeError(dout, "invalid command sequence");
 					return;
@@ -95,6 +97,9 @@ public class SocketHandler implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+        finally {
+            userDAO.setOffline(loggedUser.getId());
+        }
 	}
 
 	/**
@@ -131,6 +136,7 @@ public class SocketHandler implements Runnable {
 	 */
 	private void writeLoggedIn(DataOutputStream stream) throws IOException {
 		writeMessages(stream, LOGGED_IN_HEADER);
+
 	}
 
 	/**
