@@ -68,10 +68,11 @@ public class MapActivity extends FragmentActivity {
 			}
 		};
 		
-		/**locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
 		        600000,          // 600-second interval.
 		        0,             // 10 meters.
-		        listener);**/
+		        listener);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 600000, 0, listener);
 		toCallAsynchronous();
 	}
 	
@@ -98,7 +99,9 @@ public class MapActivity extends FragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (data == null) return;
 	    status = data.getStringExtra("status");
-	    new SendTask().execute(56.0, 56.0, status);
+	    Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+	    if(loc != null)
+	    	new SendTask().execute(loc.getLatitude(), loc.getLongitude(), status);
 	}
 	
 	public void toCallAsynchronous() {

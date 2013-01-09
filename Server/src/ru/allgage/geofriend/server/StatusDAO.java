@@ -92,14 +92,17 @@ public class StatusDAO {
                         "users.login AS login, " +
                         "users.email AS email, " +
                         "statuses.id AS status_id, " +
-                        "MAX(statuses.time) AS time, " +
+                        "statuses.time AS time, " +
                         "statuses.lat AS lat, " +
                         "statuses.lng AS lng, " +
                         "statuses.status AS text " +
                         "FROM statuses " +
                         "JOIN users ON (statuses.user_id = users.id) " +
-                        "WHERE users.isonline = 1 " +
-                        "GROUP BY users.id" )) {
+                        "WHERE statuses.time = (SELECT " +
+                        "MAX(s2.time) " +
+                        "FROM statuses AS s2 " +
+                        "WHERE s2.user_id = statuses.user_id) AND users.isonline = 1 " +
+                        "GROUP BY statuses.user_id" )) {
             try (ResultSet resultSet = statement.executeQuery()) {
                 List<Status> result = new ArrayList<>();
                 while (resultSet.next()) {
