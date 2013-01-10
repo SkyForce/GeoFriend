@@ -7,11 +7,13 @@ public class User {
 	private int id;
 	private String login;
 	private String email;
+    private boolean isOnline;
 
-	User(int id, String login, String email) {
+	User(int id, String login, String email, boolean isOnline) {
 		this.id = id;
 		this.login = login;
 		this.email = email;
+        this.isOnline = isOnline;
 	}
 
 	int getId() {
@@ -25,4 +27,9 @@ public class User {
 	public String getEmail() {
 		return email;
 	}
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
 }

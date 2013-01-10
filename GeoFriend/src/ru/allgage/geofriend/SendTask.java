@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 public class SendTask extends AsyncTask<Object, String, String> {
 

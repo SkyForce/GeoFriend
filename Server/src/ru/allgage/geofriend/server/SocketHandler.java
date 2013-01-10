@@ -84,8 +84,16 @@ public class SocketHandler implements Runnable {
 					} else {
 						writeError(dout, "error updating status");
 					}
-				} else if(command.equals("updateAllStatuses")) {
-					for (Status status : statusDAO.getOnlineStatuses()) {
+				}
+                else if(command.equals("getOnlineStatuses")) {
+                    for (Status status : statusDAO.getOnlineStatuses()) {
+                        writeStatus(dout, status);
+                    }
+                    writeMessages(dout, "end");
+                }
+                else if(command.equals("updateAllStatuses")) {
+                    long timestamp = din.readLong();
+					for (Status status : statusDAO.getStatuses(timestamp)) {
 						writeStatus(dout, status);
 					}
                     writeMessages(dout, "end");
@@ -152,6 +160,7 @@ public class SocketHandler implements Runnable {
 		stream.writeDouble(status.getLatitude());
 		stream.writeDouble(status.getLongitude());
 		stream.writeUTF(status.getText());
+        stream.writeBoolean(status.getUser().isOnline());
 		stream.flush();
 	}
 }

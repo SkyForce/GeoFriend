@@ -1,5 +1,6 @@
 package ru.allgage.geofriend;
 
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -7,6 +8,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.location.Location;
@@ -28,6 +30,9 @@ public class MapActivity extends FragmentActivity {
 	LocationManager locationManager;
 	LocationListener listener;
 	String status = "Test";
+	long lastTime = 0;
+	HashMap<String, Marker> markers;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -72,7 +77,8 @@ public class MapActivity extends FragmentActivity {
 		        600000,          // 600-second interval.
 		        0,             // 10 meters.
 		        listener);**/
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 600000, 0, listener);
+		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
+		markers = new HashMap<String, Marker>();
 		toCallAsynchronous();
 	}
 	
@@ -113,13 +119,14 @@ public class MapActivity extends FragmentActivity {
 	            handler.post(new Runnable() {
 	                public void run() {
 	                	
-	                	new UpdateTask(mMap).execute();
+	                	new UpdateTask(mMap, markers).execute(lastTime);
+	                	lastTime = System.currentTimeMillis();
 
 	                }
 	            });
 	        }
 	    };
-	    timer.schedule(doAsynchronousTask, 0, 10000); //execute in every 10000 ms
+	    timer.schedule(doAsynchronousTask, 0, 60000); //execute in every 60000 ms
 	}
 
 }

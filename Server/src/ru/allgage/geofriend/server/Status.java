@@ -45,4 +45,5 @@ public class Status {
 	public String getText() {
 		return text;
 	}
+
 }

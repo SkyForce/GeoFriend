@@ -41,7 +41,7 @@ public class UserDAO {
                     st.executeUpdate("UPDATE users SET isonline = 1 WHERE id = "+String.valueOf(id));
                 }
 
-				return new User(id, userLogin, email);
+				return new User(id, userLogin, email, true);
 			}
 		}
 	}
@@ -82,6 +82,11 @@ public class UserDAO {
     public boolean setOffline(int id){
         try (PreparedStatement statement = connection.prepareStatement(
                 "UPDATE users SET isonline = 0 WHERE id = "+String.valueOf(id))) {
+            try (PreparedStatement st = connection.prepareStatement(
+                    "UPDATE statuses SET time = (?) WHERE id = "+String.valueOf(id))) {
+                st.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                st.executeUpdate();
+            }
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
