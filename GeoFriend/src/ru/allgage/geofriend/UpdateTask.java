@@ -28,11 +28,6 @@ public class UpdateTask extends AsyncTask<Long, Object, Void> {
 	}
 	
 	@Override
-	protected void onPreExecute () {
-		map.clear();
-	}
-	
-	@Override
 	protected Void doInBackground(Long... params) {
 		// TODO Auto-generated method stub
 		
