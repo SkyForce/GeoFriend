@@ -74,14 +74,14 @@ public class StatusDAO {
 					int userId = resultSet.getInt("user_id");
 					String login = resultSet.getString("login");
 					String email = resultSet.getString("email");
-					boolean isOnline = resultSet.getBoolean("isonline");
+					int isOnline = resultSet.getInt("isonline");
                     int statusId = resultSet.getInt("status_id");
 					Timestamp dateTime = resultSet.getTimestamp("time");
 					double latitude = resultSet.getDouble("lat");
 					double longitude = resultSet.getDouble("lng");
 					String text = resultSet.getString("text");
 
-					User user = new User(userId, login, email, isOnline);
+					User user = new User(userId, login, email, isOnline > 0);
 					Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
 
 					result.add(status);

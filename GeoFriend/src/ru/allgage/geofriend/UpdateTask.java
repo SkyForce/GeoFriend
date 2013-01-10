@@ -76,17 +76,22 @@ public class UpdateTask extends AsyncTask<Long, Object, Void> {
 				
 			}
 			else {
-				mrk.setPosition(new LatLng((Double)status[1],(Double)status[2]));
-				mrk.setSnippet((String)status[3]);
-				mrk.setVisible(true);
+				mrk.remove();
+				mrk = (map.addMarker(new MarkerOptions()
+				.position(new LatLng((Double)status[1],(Double)status[2]))
+				.title((String)status[0])
+				.snippet((String)status[3])));
 			}
-			if(!mrk.isInfoWindowShown())
-				mrk.showInfoWindow();			    
+			
+			mrk.showInfoWindow();			    
 		}
 		else {
 			Marker mrk = markers.get(status[0]);
-			mrk.remove();
-			markers.remove(status[0]);
+			if(mrk != null) {
+				mrk.hideInfoWindow();
+				mrk.remove();
+				markers.remove(status[0]);
+			}
 		}
 		
 	}
