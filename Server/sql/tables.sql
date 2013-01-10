@@ -2,7 +2,8 @@ CREATE TABLE users(
     id       INTEGER PRIMARY KEY AUTO_INCREMENT,
     login    VARCHAR(64) UNIQUE,
     password CHAR(32),
-    email    VARCHAR(128)
+    email    VARCHAR(128),
+	isonilne BOOL
 );
 
 CREATE TABLE statuses(

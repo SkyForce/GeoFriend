@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import android.os.AsyncTask;
@@ -22,7 +23,12 @@ public class UpdateTask extends AsyncTask<Void, Object, Void> {
 		map = mMap;
 		din = TaskSocket.in;
 	}
-
+	
+	@Override
+	protected void onPreExecute () {
+		map.clear();
+	}
+	
 	@Override
 	protected Void doInBackground(Void... params) {
 		// TODO Auto-generated method stub
@@ -49,10 +55,11 @@ public class UpdateTask extends AsyncTask<Void, Object, Void> {
 	}
 	
 	protected void onProgressUpdate(Object... status) {
-		map.addMarker(new MarkerOptions()
+		Marker mrk = map.addMarker(new MarkerOptions()
 						.position(new LatLng((Double)status[1],(Double)status[2]))
 						.title((String)status[0])
 						.snippet((String)status[3]));
+		mrk.showInfoWindow();
     }
 
 }
