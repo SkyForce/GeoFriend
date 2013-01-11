@@ -21,6 +21,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +31,7 @@ public class MapActivity extends FragmentActivity {
 	private GoogleMap mMap;
 	LocationManager locationManager;
 	LocationListener listener;
-	String status = "Test";
+	String status;
 	long lastTime = 0;
 	HashMap<String, Marker> markers;
 	
@@ -77,6 +79,9 @@ public class MapActivity extends FragmentActivity {
 		        600000,          // 600-second interval.
 		        0,             // 10 meters.
 		        listener);**/
+		SharedPreferences preferences = getSharedPreferences("settings", 0);
+		status = preferences.getString("status", "");
+		
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
 		markers = new HashMap<String, Marker>();
 		toCallAsynchronous();
@@ -108,6 +113,10 @@ public class MapActivity extends FragmentActivity {
 	    Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 	    if(loc != null)
 	    	new SendTask().execute(loc.getLatitude(), loc.getLongitude(), status);
+	    
+	    Editor ed = getSharedPreferences("settings", 0).edit();
+	    ed.putString("status", status);
+	    ed.commit();
 	}
 	
 	public void toCallAsynchronous() {

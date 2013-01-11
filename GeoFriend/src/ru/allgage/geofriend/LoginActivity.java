@@ -10,6 +10,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
@@ -27,6 +29,11 @@ public class LoginActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 		
+		SharedPreferences preferences = getSharedPreferences("settings", 0);
+		String login = preferences.getString("login", "");
+		String pass = preferences.getString("password", "");
+		((EditText) findViewById(R.id.editText1)).setText(login);
+		((EditText) findViewById(R.id.editText2)).setText(pass);
 	}
 
 	@Override
@@ -48,6 +55,11 @@ public class LoginActivity extends Activity {
 		String s1 = ((EditText) findViewById(R.id.editText1)).getText().toString();
 		String s2 = ((EditText) findViewById(R.id.editText2)).getText().toString();
 		String s3 = null;
+		
+		Editor ed = getSharedPreferences("settings", 0).edit();
+		ed.putString("login", s1);
+		ed.putString("password", s2);
+		ed.commit();
 		
 		task = new LoginTask((TextView) findViewById(R.id.textView1), this);
 		

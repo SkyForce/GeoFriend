@@ -82,9 +82,20 @@ public class UserDAO {
     public boolean setOffline(int id){
         try (PreparedStatement statement = connection.prepareStatement(
                 "UPDATE users SET isonline = 0 WHERE id = "+String.valueOf(id))) {
+            int n = 0;
             try (PreparedStatement st = connection.prepareStatement(
-                    "UPDATE statuses SET time = (?) WHERE id = "+String.valueOf(id))) {
-                st.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+                    "SELECT id FROM statuses WHERE user_id = (?) AND time = (SELECT MAX(time) FROM statuses WHERE user_id = (?))"))  {
+                st.setInt(1, id);
+                st.setInt(2, id);
+                ResultSet rs = st.executeQuery();
+                if(rs.next())
+                    n = rs.getInt(1);
+            }
+            try (PreparedStatement st = connection.prepareStatement(
+                    "UPDATE statuses SET time = (?) WHERE id = (?)"))  {
+                st.setTimestamp(1,new Timestamp(System.currentTimeMillis()));
+                if(n > 0)
+                    st.setInt(2, n);
                 st.executeUpdate();
             }
             return statement.executeUpdate() > 0;
