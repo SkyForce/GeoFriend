@@ -11,6 +11,16 @@ public class TaskSocket {
 	public static DataOutputStream out;
 	
 	public static void setSocket(Socket sock) {
+		if(socket != null) {
+			try {
+				in.close();
+				out.close();
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		socket = sock;
 		try {
 			in = new DataInputStream(sock.getInputStream());
