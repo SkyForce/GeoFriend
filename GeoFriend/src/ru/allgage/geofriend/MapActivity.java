@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.android.gcm.GCMRegistrar;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -28,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MapActivity extends FragmentActivity {
+	private static final String SENDER_ID = "119606192268";
 	private GoogleMap mMap;
 	LocationManager locationManager;
 	LocationListener listener;
@@ -46,7 +48,8 @@ public class MapActivity extends FragmentActivity {
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		if(mMap != null) {
-			//new UpdateTask(mMap).execute();
+			UpdateMap.setMap(mMap);
+			new UpdateMap().execute(0);
 		}
 		
 		listener = new LocationListener() {
@@ -84,7 +87,14 @@ public class MapActivity extends FragmentActivity {
 		
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
 		markers = new HashMap<String, Marker>();
-		toCallAsynchronous();
+		//toCallAsynchronous();
+		
+		GCMRegistrar.checkDevice(this);
+		GCMRegistrar.checkManifest(this);
+		final String regId = GCMRegistrar.getRegistrationId(this);
+		if (regId.equals("")) {
+		  GCMRegistrar.register(this, SENDER_ID);
+		}
 	}
 	
 	@Override

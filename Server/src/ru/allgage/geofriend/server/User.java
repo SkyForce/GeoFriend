@@ -8,6 +8,7 @@ public class User {
 	private String login;
 	private String email;
     private boolean isOnline;
+    private String reg_id;
 
 	User(int id, String login, String email, boolean isOnline) {
 		this.id = id;
@@ -30,6 +31,10 @@ public class User {
 
     public boolean isOnline() {
         return isOnline;
+    }
+
+    public String getRegId() {
+        return reg_id;
     }
 
 }

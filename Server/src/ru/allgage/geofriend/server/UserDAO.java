@@ -1,6 +1,8 @@
 package ru.allgage.geofriend.server;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User data access object.
@@ -81,7 +83,8 @@ public class UserDAO {
 
     public boolean setOffline(int id){
         try (PreparedStatement statement = connection.prepareStatement(
-                "UPDATE users SET isonline = 0 WHERE id = "+String.valueOf(id))) {
+                "UPDATE users SET isonline = 0 WHERE id = (?)")) {
+            statement.setInt(1,id);
             int n = 0;
             try (PreparedStatement st = connection.prepareStatement(
                     "SELECT id FROM statuses WHERE user_id = (?) AND time = (SELECT MAX(time) FROM statuses WHERE user_id = (?))"))  {
@@ -103,5 +106,32 @@ public class UserDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void updateRegID(String id, int uid) {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "UPDATE users SET reg_id = (?) WHERE id = (?)")) {
+            statement.setString(1,id);
+            statement.setInt(2,uid);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+
+    public List<String> getOnlineIDs() {
+        List<String> list = new ArrayList<String>();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT reg_id FROM users WHERE isonline = 1 AND not isnull(reg_id)")) {
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()) {
+                list.add(rs.getString("reg_id"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return list;
     }
 }

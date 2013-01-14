@@ -30,7 +30,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
 	public String doInBackground(String... str) {
 		// TODO Auto-generated method stub
 		try {
-			sock = new Socket("192.168.1.102",7777);
+			sock = new Socket("192.168.1.103",7777);
 			synchronized(sock) {
 				TaskSocket.setSocket(sock);
 				din = TaskSocket.in;

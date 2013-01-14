@@ -1,9 +1,13 @@
 package ru.allgage.geofriend.server;
 
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Sender;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -20,6 +24,8 @@ public class SocketHandler implements Runnable {
 
 	User loggedUser;
 
+    Sender sender;
+
 	/**
 	 * Creates a socket handler.
 	 *
@@ -31,6 +37,7 @@ public class SocketHandler implements Runnable {
 		this.socket = socket;
 		this.userDAO = userDAO;
 		this.statusDAO = statusDAO;
+        sender = new Sender("AIzaSyBjswMkWZaA3SSSXvbvcEMpqFUxR8p_E1M");
 		System.out.println(socket.getInetAddress().toString());
 	}
 
@@ -68,7 +75,6 @@ public class SocketHandler implements Runnable {
 				return;
 			}
 
-
 			writeLoggedIn(dout);
 
 			Random rnd = new Random();
@@ -81,6 +87,15 @@ public class SocketHandler implements Runnable {
 					String status = din.readUTF();
 					if (statusDAO.create(loggedUser, lat, lng, status)) {
 						writeMessages(dout, "success");
+                        Message msg = new Message.Builder()
+                                .addData("user", loggedUser.getLogin())
+                                .addData("lat", String.valueOf(lat))
+                                .addData("lng", String.valueOf(lng))
+                                .addData("status", status)
+                                .build();
+                        List<String> list = userDAO.getOnlineIDs();
+                        if(!list.isEmpty())
+                            sender.send(msg, list, 2);
 					} else {
 						writeError(dout, "error updating status");
 					}
@@ -97,7 +112,13 @@ public class SocketHandler implements Runnable {
 						writeStatus(dout, status);
 					}
                     writeMessages(dout, "end");
-				} else {
+				}
+                else if(command.equals("add device")) {
+                    String regID = din.readUTF();
+                    userDAO.updateRegID(regID, loggedUser.getId());
+                    dout.writeUTF("ok");
+                }
+                else {
 					writeError(dout, "invalid command sequence");
 					return;
 				}
@@ -107,6 +128,16 @@ public class SocketHandler implements Runnable {
 		}
         finally {
             userDAO.setOffline(loggedUser.getId());
+            Message msg = new Message.Builder()
+                    .addData("user", loggedUser.getLogin())
+                    .addData("offline", "offline")
+                    .build();
+            List<String> list = userDAO.getOnlineIDs();
+            try {
+                sender.send(msg, list, 2);
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
         }
 	}
 
