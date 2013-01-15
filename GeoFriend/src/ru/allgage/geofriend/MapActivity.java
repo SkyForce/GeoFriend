@@ -92,9 +92,9 @@ public class MapActivity extends FragmentActivity {
 		GCMRegistrar.checkDevice(this);
 		GCMRegistrar.checkManifest(this);
 		final String regId = GCMRegistrar.getRegistrationId(this);
-		if (regId.equals("")) {
+		//if (regId.equals("")) {
 		  GCMRegistrar.register(this, SENDER_ID);
-		}
+		//}
 	}
 	
 	@Override

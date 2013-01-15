@@ -34,17 +34,19 @@ public class UserDAO {
 			statement.setString(2, password);
 
 			try (ResultSet resultSet = statement.executeQuery()) {
-				resultSet.next();
-				Integer id = resultSet.getInt("id");
-				String userLogin = resultSet.getString("login");
-				String email = resultSet.getString("email");
+				if(resultSet.next()) {
+                    Integer id = resultSet.getInt("id");
+                    String userLogin = resultSet.getString("login");
+                    String email = resultSet.getString("email");
 
-                try(Statement st = connection.createStatement()) {
-                    st.executeUpdate("UPDATE users SET isonline = 1 WHERE id = "+String.valueOf(id));
+                    try(Statement st = connection.createStatement()) {
+                        st.executeUpdate("UPDATE users SET isonline = 1 WHERE id = "+String.valueOf(id));
+                    }
+
+                    return new User(id, userLogin, email, true);
                 }
-
-				return new User(id, userLogin, email, true);
 			}
+            return null;
 		}
 	}
 
@@ -74,18 +76,21 @@ public class UserDAO {
 		}
 	}
 
-    public boolean clearOnlines() throws SQLException {
+    public boolean clearOnlines() {
         try (PreparedStatement statement = connection.prepareStatement(
                 "UPDATE users SET isonline = 0")) {
             return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+        return false;
     }
 
     public boolean setOffline(int id){
         try (PreparedStatement statement = connection.prepareStatement(
                 "UPDATE users SET isonline = 0 WHERE id = (?)")) {
             statement.setInt(1,id);
-            int n = 0;
+            /**int n = 0;
             try (PreparedStatement st = connection.prepareStatement(
                     "SELECT id FROM statuses WHERE user_id = (?) AND time = (SELECT MAX(time) FROM statuses WHERE user_id = (?))"))  {
                 st.setInt(1, id);
@@ -100,7 +105,7 @@ public class UserDAO {
                 if(n > 0)
                     st.setInt(2, n);
                 st.executeUpdate();
-            }
+            }**/
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
