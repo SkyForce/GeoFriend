@@ -44,6 +44,7 @@ public class MapActivity extends FragmentActivity {
 		 
 		SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
 		mMap = mapFragment.getMap();
+		mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
@@ -85,16 +86,21 @@ public class MapActivity extends FragmentActivity {
 		SharedPreferences preferences = getSharedPreferences("settings", 0);
 		status = preferences.getString("status", "");
 		
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
+		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
+		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+	    {
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10f, listener);
+	    }
 		markers = new HashMap<String, Marker>();
 		//toCallAsynchronous();
 		
 		GCMRegistrar.checkDevice(this);
 		GCMRegistrar.checkManifest(this);
 		final String regId = GCMRegistrar.getRegistrationId(this);
-		//if (regId.equals("")) {
+		
+		if (regId.equals("")) {
 		  GCMRegistrar.register(this, SENDER_ID);
-		//}
+		}
 	}
 	
 	@Override
@@ -111,6 +117,10 @@ public class MapActivity extends FragmentActivity {
 	        Intent intent = new Intent(this, StatusActivity.class);
 	        startActivityForResult(intent, 1);
 	        return true;
+	    case R.id.item2:
+	    	locationManager.removeUpdates(listener);
+	    	GCMRegistrar.unregister(this);
+	    	new CloseTask().execute(this);
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
@@ -120,7 +130,7 @@ public class MapActivity extends FragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (data == null) return;
 	    status = data.getStringExtra("status");
-	    Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+	    Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	    if(loc != null)
 	    	new SendTask().execute(loc.getLatitude(), loc.getLongitude(), status);
 	    
@@ -147,6 +157,12 @@ public class MapActivity extends FragmentActivity {
 	    };
 	    timer.schedule(doAsynchronousTask, 0, 60000); //execute in every 60000 ms
 	}
+	
+	@Override
+    public void onBackPressed()
+    {
+		moveTaskToBack(true);
+    }
 
 }
 

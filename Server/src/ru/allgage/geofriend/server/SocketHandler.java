@@ -49,7 +49,7 @@ public class SocketHandler implements Runnable {
 		try (Socket socket = this.socket;
 			 DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 			 DataInputStream din = new DataInputStream(socket.getInputStream())) {
-
+            socket.setKeepAlive(true);
 			String auth = din.readUTF();
 			if (auth.equals("login")) {
 				String user = din.readUTF();

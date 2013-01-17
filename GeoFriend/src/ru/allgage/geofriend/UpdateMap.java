@@ -67,11 +67,8 @@ public class UpdateMap extends AsyncTask<Object, Object, Void> {
 					
 				}
 				else {
-					mrk.remove();
-					mrk = (gmap.addMarker(new MarkerOptions()
-					.position(new LatLng((Double)status[1],(Double)status[2]))
-					.title((String)status[0])
-					.snippet((String)status[3])));
+					mrk.setPosition(new LatLng((Double)status[1],(Double)status[2]));
+					mrk.setSnippet((String)status[3]);
 				}
 				
 				mrk.showInfoWindow();			    

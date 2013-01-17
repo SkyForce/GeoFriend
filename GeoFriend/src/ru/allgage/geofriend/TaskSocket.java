@@ -12,17 +12,11 @@ public class TaskSocket {
 	
 	public static void setSocket(Socket sock) {
 		if(socket != null) {
-			try {
-				in.close();
-				out.close();
-				socket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			close();
 		}
 		socket = sock;
 		try {
+			socket.setKeepAlive(true);
 			in = new DataInputStream(sock.getInputStream());
 			out = new DataOutputStream(sock.getOutputStream());
 		} catch (IOException e) {
@@ -63,5 +57,16 @@ public class TaskSocket {
 		// TODO: Proper format double.
 		String datagram = String.format("%s:%d:%d:%s", userName, latitude, longitude, message);
 		writeMessages(datagram);
+	}
+	
+	public static void close() {
+		try {
+			in.close();
+			out.close();
+			socket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

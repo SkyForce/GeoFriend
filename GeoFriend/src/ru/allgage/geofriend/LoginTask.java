@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -18,9 +19,9 @@ public class LoginTask extends AsyncTask<String, String, String> {
     String msg = "";
     boolean isLogged = false;
     TextView view;
-    Context parent;
+    Activity parent;
 
-    LoginTask(TextView v, Context cont) {
+    LoginTask(TextView v, Activity cont) {
     	view = v;
     	parent = cont;
     }
@@ -31,6 +32,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
 		// TODO Auto-generated method stub
 		try {
 			sock = new Socket("80.78.247.173",7777);
+			//sock = new Socket("192.168.1.102", 7777);
 			synchronized(sock) {
 				TaskSocket.setSocket(sock);
 				din = TaskSocket.in;
@@ -58,13 +60,11 @@ public class LoginTask extends AsyncTask<String, String, String> {
         if(result.equals("logged in")) {
         	Intent intent = new Intent(parent, MapActivity.class);
 			parent.startActivity(intent);
+			parent.finish();
+			
         } else
-			try {
-				sock.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				TaskSocket.close();
+
     }
 	
 }
