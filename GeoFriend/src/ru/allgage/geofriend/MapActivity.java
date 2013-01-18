@@ -87,10 +87,12 @@ public class MapActivity extends FragmentActivity {
 		status = preferences.getString("status", "");
 		
 		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
-		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 	    {
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10f, listener);
+			new CloseTask(this).execute();
 	    }
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 5f, listener);
+		
 		markers = new HashMap<String, Marker>();
 		//toCallAsynchronous();
 		
@@ -120,7 +122,7 @@ public class MapActivity extends FragmentActivity {
 	    case R.id.item2:
 	    	locationManager.removeUpdates(listener);
 	    	GCMRegistrar.unregister(this);
-	    	new CloseTask().execute(this);
+	    	new CloseTask(this).execute();
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
@@ -139,24 +141,6 @@ public class MapActivity extends FragmentActivity {
 	    ed.commit();
 	}
 	
-	public void toCallAsynchronous() {
-	    final Handler handler = new Handler();
-	    Timer timer = new Timer();
-	    TimerTask doAsynchronousTask = new TimerTask() {       
-	        @Override
-	        public void run() {
-	            handler.post(new Runnable() {
-	                public void run() {
-	                	
-	                	new UpdateTask(mMap, markers).execute(lastTime);
-	                	lastTime = System.currentTimeMillis();
-
-	                }
-	            });
-	        }
-	    };
-	    timer.schedule(doAsynchronousTask, 0, 60000); //execute in every 60000 ms
-	}
 	
 	@Override
     public void onBackPressed()

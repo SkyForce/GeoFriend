@@ -14,6 +14,7 @@ public class UpdateMap extends AsyncTask<Object, Object, Void> {
 
 	private static GoogleMap gmap;
     private static HashMap<String, Marker> markers;
+    TaskSocket sock;
 	
 	public static void setMap(GoogleMap mp) {
 		gmap = mp;
@@ -25,23 +26,22 @@ public class UpdateMap extends AsyncTask<Object, Object, Void> {
 		// TODO Auto-generated method stub
 		if(gmap != null) {
 			if(status.length == 1) {
-				synchronized(TaskSocket.socket) {
-					try {
-						TaskSocket.out.writeUTF("getOnlineStatuses");
-						String isEnd;
-						while(!(isEnd = TaskSocket.in.readUTF()).equals("end")) {
-							String login = TaskSocket.in.readUTF();
-							double lat = TaskSocket.in.readDouble();
-							double lng = TaskSocket.in.readDouble();
-							String txt = TaskSocket.in.readUTF();
-							boolean isOnline = TaskSocket.in.readBoolean();
-							publishProgress(login, lat, lng, txt, isOnline);
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+				try {
+					sock = new TaskSocket();
+					sock.writeAuth();
+					sock.out.writeUTF("getOnlineStatuses");
+					String isEnd;
+					while(!(isEnd = sock.in.readUTF()).equals("end")) {
+						String login = sock.in.readUTF();
+						double lat = sock.in.readDouble();
+						double lng = sock.in.readDouble();
+						String txt = sock.in.readUTF();
+						boolean isOnline = sock.in.readBoolean();
+						publishProgress(login, lat, lng, txt, isOnline);
 					}
-					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			else if(status.length == 4) {
@@ -83,6 +83,11 @@ public class UpdateMap extends AsyncTask<Object, Object, Void> {
 			}
 		}
 	}
+	
+	protected void onPostExecute(String result) {
+        // TODO: add pop-up
+		sock.close();
+    }
 		
 
 }

@@ -4,21 +4,31 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class TaskSocket {
-	public static Socket socket;
-	public static DataInputStream in;
-	public static DataOutputStream out;
+	public Socket socket;
+	public DataInputStream in;
+	public DataOutputStream out;
+	public static String log;
+	public static String pass;
 	
-	public static void setSocket(Socket sock) {
-		if(socket != null) {
-			close();
-		}
-		socket = sock;
+	public TaskSocket() {
 		try {
+			socket = new Socket("192.168.1.102", 7777);
+			//socket = new Socket("80.78.247.173",7777);
 			socket.setKeepAlive(true);
-			in = new DataInputStream(sock.getInputStream());
-			out = new DataOutputStream(sock.getOutputStream());
+			in = new DataInputStream(socket.getInputStream());
+			out = new DataOutputStream(socket.getOutputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void writeAuth() {
+		try {
+			writeMessages(log, pass);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -31,7 +41,7 @@ public class TaskSocket {
 	 * @param messages messages to write.
 	 * @throws IOException thrown in case something going wrong.
 	 */
-	public static void writeMessages(String... messages) throws IOException {
+	public void writeMessages(String... messages) throws IOException {
 		for (String message : messages) {
 			out.writeUTF(message);
 		}
@@ -49,7 +59,7 @@ public class TaskSocket {
 	 * @param message   the message text.
 	 * @throws IOException thrown in case something going wrong.
 	 */
-	public static void writeStatus(
+	public void writeStatus(
 			String userName,
 			double latitude,
 			double longitude,
@@ -59,7 +69,7 @@ public class TaskSocket {
 		writeMessages(datagram);
 	}
 	
-	public static void close() {
+	public void close() {
 		try {
 			in.close();
 			out.close();

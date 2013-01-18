@@ -50,19 +50,23 @@ public class SocketHandler implements Runnable {
 			 DataOutputStream dout = new DataOutputStream(socket.getOutputStream());
 			 DataInputStream din = new DataInputStream(socket.getInputStream())) {
             socket.setKeepAlive(true);
-			String auth = din.readUTF();
-			if (auth.equals("login")) {
-				String user = din.readUTF();
-				String pass = din.readUTF();
 
-				loggedUser = userDAO.load(user, pass);
-				if (loggedUser == null) {
-					writeError(dout, "invalid login or password");
-					return;
-				}
-			} else if (auth.equals("register")) {
-				String user = din.readUTF();
-				String pass = din.readUTF();
+            String user = din.readUTF();
+            String pass = din.readUTF();
+
+            String command = din.readUTF();
+
+            loggedUser = userDAO.load(user, pass);
+
+            if (command.equals("login")) {
+                if (loggedUser == null) {
+                    writeError(dout, "invalid login or password");
+                    return;
+                }
+                writeLoggedIn(dout);
+
+			}
+            else if (command.equals("register")) {
 				String email = din.readUTF();
 
 				loggedUser = userDAO.create(user, pass, email);
@@ -70,16 +74,71 @@ public class SocketHandler implements Runnable {
 					writeError(dout, "cannot register user");
 					return;
 				}
-			} else {
-				writeError(dout, "invalid login sequence");
-				return;
+                writeLoggedIn(dout);
 			}
+            else if(loggedUser == null) {
+                writeError(dout, "invalid login or password");
+                return;
+            }
+            else if (command.equals("updateStatus")) {
+                double lat = din.readDouble();
+                double lng = din.readDouble();
+                String status = din.readUTF();
+                if (statusDAO.create(loggedUser, lat, lng, status)) {
+                    writeMessages(dout, "success");
+                    Message msg = new Message.Builder()
+                            .addData("user", loggedUser.getLogin())
+                            .addData("lat", String.valueOf(lat))
+                            .addData("lng", String.valueOf(lng))
+                            .addData("status", status)
+                            .build();
+                    List<String> list = userDAO.getOnlineIDs();
+                    if(!list.isEmpty())
+                        sender.send(msg, list, 2);
+                } else {
+                    writeError(dout, "error updating status");
+                }
+            }
+            else if(command.equals("getOnlineStatuses")) {
+                for (Status status : statusDAO.getOnlineStatuses()) {
+                    writeStatus(dout, status);
+                }
+                writeMessages(dout, "end");
+            }
+            else if(command.equals("updateAllStatuses")) {
+                long timestamp = din.readLong();
+                for (Status status : statusDAO.getStatuses(timestamp)) {
+                    writeStatus(dout, status);
+                }
+                writeMessages(dout, "end");
+            }
+            else if(command.equals("add device")) {
+                String regID = din.readUTF();
+                userDAO.updateRegID(regID, loggedUser.getId());
+                dout.writeUTF("ok");
+            }
+            else if(command.equals("offline")) {
+                userDAO.setOffline(loggedUser.getId());
+                Message msg = new Message.Builder()
+                        .addData("user", loggedUser.getLogin())
+                        .addData("offline", "offline")
+                        .build();
+                List<String> list = userDAO.getOnlineIDs();
+                try {
+                    sender.send(msg, list, 2);
+                } catch (IOException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+            else {
+                writeError(dout, "invalid command sequence");
+                return;
+            }
 
-			writeLoggedIn(dout);
 
 			Random rnd = new Random();
 
-			while (true) {
+			/**while (true) {
 				String command = din.readUTF();
 				if (command.equals("updateStatus")) {
 					double lat = din.readDouble();
@@ -122,22 +181,12 @@ public class SocketHandler implements Runnable {
 					writeError(dout, "invalid command sequence");
 					return;
 				}
-			}
+			}**/
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
         finally {
-            userDAO.setOffline(loggedUser.getId());
-            Message msg = new Message.Builder()
-                    .addData("user", loggedUser.getLogin())
-                    .addData("offline", "offline")
-                    .build();
-            List<String> list = userDAO.getOnlineIDs();
-            try {
-                sender.send(msg, list, 2);
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
+
         }
 	}
 

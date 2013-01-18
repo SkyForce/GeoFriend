@@ -38,15 +38,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
 	protected void onRegistered(Context arg0, String regID) {
 		// TODO send data to server
-		synchronized(TaskSocket.socket) {
-			try {
-				TaskSocket.writeMessages("add device", regID);
-				TaskSocket.in.readUTF();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
+		TaskSocket sock = new TaskSocket();
+		try {
+			sock.writeAuth();
+			sock.writeMessages("add device", regID);
+			sock.in.readUTF();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

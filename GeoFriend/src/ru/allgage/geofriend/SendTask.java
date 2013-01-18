@@ -10,27 +10,30 @@ import android.widget.Toast;
 
 public class SendTask extends AsyncTask<Object, String, String> {
 
+	TaskSocket sock;
 	@Override
 	protected String doInBackground(Object... arg) {
-		synchronized(TaskSocket.socket) {
-			try {
-				TaskSocket.out.writeUTF("updateStatus");
-				TaskSocket.out.writeDouble((Double)arg[0]);
-				TaskSocket.out.writeDouble((Double)arg[1]);
-				TaskSocket.out.writeUTF((String)arg[2]);
-				TaskSocket.out.flush();
-				String res = TaskSocket.in.readUTF();
-				return res;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		try {
+			sock = new TaskSocket();
+			sock.writeAuth();
+			
+			sock.out.writeUTF("updateStatus");
+			sock.out.writeDouble((Double)arg[0]);
+			sock.out.writeDouble((Double)arg[1]);
+			sock.out.writeUTF((String)arg[2]);
+			sock.out.flush();
+			String res = sock.in.readUTF();
+			return res;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "error";
 		}
-		return "error";
 	}
 	
 	protected void onPostExecute(String result) {
         // TODO: add pop-up
+		sock.close();
     }
 
 }

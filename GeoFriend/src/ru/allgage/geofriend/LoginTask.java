@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 
 public class LoginTask extends AsyncTask<String, String, String> {
-	Socket sock;
+	TaskSocket sock;
 	DataOutputStream dout;
     DataInputStream din;
     String msg = "";
@@ -31,21 +31,21 @@ public class LoginTask extends AsyncTask<String, String, String> {
 	public String doInBackground(String... str) {
 		// TODO Auto-generated method stub
 		try {
-			sock = new Socket("80.78.247.173",7777);
+			sock = new TaskSocket();
+			sock.log = str[0];
+			sock.pass = str[1];
+			sock.writeAuth();
 			//sock = new Socket("192.168.1.102", 7777);
-			synchronized(sock) {
-				TaskSocket.setSocket(sock);
-				din = TaskSocket.in;
-				publishProgress("sending data to server");
-				if(str.length == 2) {
-					TaskSocket.writeMessages("login", str[0], str[1]);
-				}
-				else {
-					TaskSocket.writeMessages("register", str[0], str[1], str[2]);
-				}
-				String res = din.readUTF();
-				return res;
+			din = sock.in;
+			publishProgress("sending data to server");
+			if(str.length == 2) {
+				sock.writeMessages("login");
 			}
+			else {
+				sock.writeMessages("register", str[2]);
+			}
+			String res = din.readUTF();
+			return res;
 
 		}
 		catch (IOException e) {
@@ -62,8 +62,8 @@ public class LoginTask extends AsyncTask<String, String, String> {
 			parent.startActivity(intent);
 			parent.finish();
 			
-        } else
-				TaskSocket.close();
+        }
+        sock.close();
 
     }
 	

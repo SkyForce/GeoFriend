@@ -1,18 +1,37 @@
 package ru.allgage.geofriend;
 
+import java.io.IOException;
+
 import android.os.AsyncTask;
 import android.app.*;
 
-public class CloseTask extends AsyncTask<Activity, Void, Void> {
+public class CloseTask extends AsyncTask<Object, Void, Void> {
 
+	Activity act;
+	TaskSocket sock;
+	
+	public CloseTask(Activity activity) {
+		act = activity;
+	}
+	
 	@Override
-	protected Void doInBackground(Activity... params) {
+	protected Void doInBackground(Object... params) {
 		// TODO Auto-generated method stub
-		synchronized(TaskSocket.socket) {
-			TaskSocket.close();
+		sock = new TaskSocket();
+		try {
+			sock.writeAuth();
+			sock.writeMessages("offline");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		params[0].finish();
+		act.finish();
 		return null;
+	}
+	
+	@Override
+	protected void onPostExecute(Void res) {
+		sock.close();
 	}
 
 }
