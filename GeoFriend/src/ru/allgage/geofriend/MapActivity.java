@@ -157,6 +157,7 @@ public class MapActivity extends FragmentActivity {
 	}
 	
 	protected void onDestroy() {
+		super.onDestroy();
 		locationManager.removeUpdates(listener);
     	GCMRegistrar.unregister(this);
     	new CloseTask(this).execute();
