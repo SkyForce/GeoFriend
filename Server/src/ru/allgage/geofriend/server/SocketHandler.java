@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -96,16 +97,10 @@ public class SocketHandler implements Runnable {
 					writeError(dout, "error updating status");
 				}
 			} else if (command.equals("getOnlineStatuses")) {
-				for (Status status : statusDAO.getOnlineStatuses()) {
-					writeStatus(dout, status);
-				}
-				writeMessages(dout, "end");
+				writeStatuses(dout, statusDAO.getOnlineStatuses());
 			} else if (command.equals("updateAllStatuses")) {
 				long timestamp = din.readLong();
-				for (Status status : statusDAO.getActualStatuses(timestamp)) {
-					writeStatus(dout, status);
-				}
-				writeMessages(dout, "end");
+				writeStatuses(dout, statusDAO.getActualStatuses(timestamp));
 			} else if (command.equals("add device")) {
 				String regID = din.readUTF();
 				userDAO.updateRegID(regID, loggedUser.getId());
@@ -216,7 +211,21 @@ public class SocketHandler implements Runnable {
 	 */
 	private void writeLoggedIn(DataOutputStream stream) throws IOException {
 		writeMessages(stream, LOGGED_IN_HEADER);
+	}
 
+	/**
+	 * Writes the status collection to the data stream.
+	 *
+	 * @param stream   the data stream.
+	 * @param statuses the statuses collection.
+	 * @throws IOException thrown in case something going wrong.
+	 */
+	private void writeStatuses(DataOutputStream stream, Collection<Status> statuses) throws IOException {
+		for (Status status : statuses) {
+			writeStatus(stream, status);
+		}
+
+		writeMessages(stream, "end");
 	}
 
 	/**
