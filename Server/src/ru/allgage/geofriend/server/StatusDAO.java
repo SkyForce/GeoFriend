@@ -2,7 +2,6 @@ package ru.allgage.geofriend.server;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,24 +49,24 @@ public class StatusDAO {
 	 */
 	public List<Status> getStatuses(long timestamp) throws SQLException {
 		try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT " +
-                        "users.id AS user_id, " +
-                        "users.login AS login, " +
-                        "users.email AS email, " +
-                        "users.isonline AS isonline, " +
-                        "statuses.id AS status_id, " +
-                        "statuses.time AS time, " +
-                        "statuses.lat AS lat, " +
-                        "statuses.lng AS lng, " +
-                        "statuses.status AS text " +
-                        "FROM statuses " +
-                        "JOIN users ON (statuses.user_id = users.id) " +
-                        "WHERE statuses.time = (SELECT " +
-                        "MAX(s2.time) " +
-                        "FROM statuses AS s2 " +
-                        "WHERE s2.user_id = statuses.user_id) AND statuses.time > (?) " +
-                        "GROUP BY statuses.user_id" )) {
-            statement.setTimestamp(1, new Timestamp(timestamp));
+				"SELECT " +
+						"users.id AS user_id, " +
+						"users.login AS login, " +
+						"users.email AS email, " +
+						"users.isonline AS isonline, " +
+						"statuses.id AS status_id, " +
+						"statuses.time AS time, " +
+						"statuses.lat AS lat, " +
+						"statuses.lng AS lng, " +
+						"statuses.status AS text " +
+						"FROM statuses " +
+						"JOIN users ON (statuses.user_id = users.id) " +
+						"WHERE statuses.time = (SELECT " +
+						"MAX(s2.time) " +
+						"FROM statuses AS s2 " +
+						"WHERE s2.user_id = statuses.user_id) AND statuses.time > (?) " +
+						"GROUP BY statuses.user_id")) {
+			statement.setTimestamp(1, new Timestamp(timestamp));
 			try (ResultSet resultSet = statement.executeQuery()) {
 				List<Status> result = new ArrayList<>();
 				while (resultSet.next()) {
@@ -75,7 +74,7 @@ public class StatusDAO {
 					String login = resultSet.getString("login");
 					String email = resultSet.getString("email");
 					int isOnline = resultSet.getInt("isonline");
-                    int statusId = resultSet.getInt("status_id");
+					int statusId = resultSet.getInt("status_id");
 					Timestamp dateTime = resultSet.getTimestamp("time");
 					double latitude = resultSet.getDouble("lat");
 					double longitude = resultSet.getDouble("lng");
@@ -92,45 +91,44 @@ public class StatusDAO {
 		}
 	}
 
-    public List<Status> getOnlineStatuses() throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "SELECT " +
-                        "users.id AS user_id, " +
-                        "users.login AS login, " +
-                        "users.email AS email, " +
-                        "statuses.id AS status_id, " +
-                        "statuses.time AS time, " +
-                        "statuses.lat AS lat, " +
-                        "statuses.lng AS lng, " +
-                        "statuses.status AS text " +
-                        "FROM statuses " +
-                        "JOIN users ON (statuses.user_id = users.id) " +
-                        "WHERE statuses.time = (SELECT " +
-                        "MAX(s2.time) " +
-                        "FROM statuses AS s2 " +
-                        "WHERE s2.user_id = statuses.user_id) AND users.isonline = 1 " +
-                        "GROUP BY statuses.user_id" )) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                List<Status> result = new ArrayList<>();
-                while (resultSet.next()) {
-                    int userId = resultSet.getInt("user_id");
-                    String login = resultSet.getString("login");
-                    String email = resultSet.getString("email");
-                    int statusId = resultSet.getInt("status_id");
-                    Timestamp dateTime = resultSet.getTimestamp("time");
-                    double latitude = resultSet.getDouble("lat");
-                    double longitude = resultSet.getDouble("lng");
-                    String text = resultSet.getString("text");
+	public List<Status> getOnlineStatuses() throws SQLException {
+		try (PreparedStatement statement = connection.prepareStatement(
+				"SELECT " +
+						"users.id AS user_id, " +
+						"users.login AS login, " +
+						"users.email AS email, " +
+						"statuses.id AS status_id, " +
+						"statuses.time AS time, " +
+						"statuses.lat AS lat, " +
+						"statuses.lng AS lng, " +
+						"statuses.status AS text " +
+						"FROM statuses " +
+						"JOIN users ON (statuses.user_id = users.id) " +
+						"WHERE statuses.time = (SELECT " +
+						"MAX(s2.time) " +
+						"FROM statuses AS s2 " +
+						"WHERE s2.user_id = statuses.user_id) AND users.isonline = 1 " +
+						"GROUP BY statuses.user_id")) {
+			try (ResultSet resultSet = statement.executeQuery()) {
+				List<Status> result = new ArrayList<>();
+				while (resultSet.next()) {
+					int userId = resultSet.getInt("user_id");
+					String login = resultSet.getString("login");
+					String email = resultSet.getString("email");
+					int statusId = resultSet.getInt("status_id");
+					Timestamp dateTime = resultSet.getTimestamp("time");
+					double latitude = resultSet.getDouble("lat");
+					double longitude = resultSet.getDouble("lng");
+					String text = resultSet.getString("text");
 
-                    User user = new User(userId, login, email, true);
-                    Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
+					User user = new User(userId, login, email, true);
+					Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
 
-                    result.add(status);
-                }
+					result.add(status);
+				}
 
-                return result;
-            }
-        }
-
-    }
+				return result;
+			}
+		}
+	}
 }
