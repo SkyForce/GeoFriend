@@ -101,6 +101,9 @@ public class SocketHandler implements Runnable {
 			} else if (command.equals("updateAllStatuses")) {
 				long timestamp = din.readLong();
 				writeStatuses(dout, statusDAO.getActualStatuses(timestamp));
+			} else if (command.equals("getUserStatuses")) {
+				String userLogin = din.readUTF();
+				writeStatuses(dout, statusDAO.getHistoricalStatuses(userLogin));
 			} else if (command.equals("add device")) {
 				String regID = din.readUTF();
 				userDAO.updateRegID(regID, loggedUser.getId());

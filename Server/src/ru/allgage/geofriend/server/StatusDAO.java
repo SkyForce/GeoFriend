@@ -96,6 +96,35 @@ public class StatusDAO {
 	}
 
 	/**
+	 * Returns last 10 statuses of a specified user.
+	 *
+	 * @param userLogin user login.
+	 * @return list with statuses.
+	 * @throws SQLException thrown on query fail.
+	 */
+	public List<Status> getHistoricalStatuses(String userLogin) throws SQLException {
+		try (PreparedStatement statement = connection.prepareStatement(
+				"SELECT TOP 10 " +
+						"users.id AS user_id, " +
+						"users.login AS login, " +
+						"users.email AS email, " +
+						"users.isonline AS isonline, " +
+						"statuses.id AS status_id, " +
+						"statuses.time AS time, " +
+						"statuses.lat AS lat, " +
+						"statuses.lng AS lng, " +
+						"statuses.status AS text " +
+						"FROM statuses " +
+						"JOIN users ON (statuses.user_id = users.id) " +
+						"WHERE users.login = ? " +
+						"ORDER BY statuses.time DESC")) {
+			statement.setString(1, userLogin);
+
+			return selectStatuses(statement);
+		}
+	}
+
+	/**
 	 * Selects the statuses from the database.
 	 *
 	 * @param statement query statement.
