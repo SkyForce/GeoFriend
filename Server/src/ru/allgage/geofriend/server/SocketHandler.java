@@ -107,7 +107,7 @@ public class SocketHandler implements Runnable {
             }
             else if(command.equals("updateAllStatuses")) {
                 long timestamp = din.readLong();
-                for (Status status : statusDAO.getStatuses(timestamp)) {
+                for (Status status : statusDAO.getActualStatuses(timestamp)) {
                     writeStatus(dout, status);
                 }
                 writeMessages(dout, "end");
@@ -168,7 +168,7 @@ public class SocketHandler implements Runnable {
                 }
                 else if(command.equals("updateAllStatuses")) {
                     long timestamp = din.readLong();
-					for (Status status : statusDAO.getStatuses(timestamp)) {
+					for (Status status : statusDAO.getActualStatuses(timestamp)) {
 						writeStatus(dout, status);
 					}
                     writeMessages(dout, "end");

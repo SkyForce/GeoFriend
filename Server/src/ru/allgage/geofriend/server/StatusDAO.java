@@ -47,7 +47,7 @@ public class StatusDAO {
 	 * @return list with statuses.
 	 * @throws SQLException thrown on query fail.
 	 */
-	public List<Status> getStatuses(long timestamp) throws SQLException {
+	public List<Status> getActualStatuses(long timestamp) throws SQLException {
 		try (PreparedStatement statement = connection.prepareStatement(
 				"SELECT " +
 						"users.id AS user_id, " +
