@@ -104,7 +104,7 @@ public class StatusDAO {
 	 */
 	public List<Status> getHistoricalStatuses(String userLogin) throws SQLException {
 		try (PreparedStatement statement = connection.prepareStatement(
-				"SELECT TOP 10 " +
+				"SELECT " +
 						"users.id AS user_id, " +
 						"users.login AS login, " +
 						"users.email AS email, " +
@@ -117,7 +117,8 @@ public class StatusDAO {
 						"FROM statuses " +
 						"JOIN users ON (statuses.user_id = users.id) " +
 						"WHERE users.login = ? " +
-						"ORDER BY statuses.time DESC")) {
+						"ORDER BY statuses.time DESC " +
+						"LIMIT 10")) {
 			statement.setString(1, userLogin);
 
 			return selectStatuses(statement);
