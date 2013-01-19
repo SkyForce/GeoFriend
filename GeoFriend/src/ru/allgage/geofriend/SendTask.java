@@ -14,21 +14,28 @@ public class SendTask extends AsyncTask<Object, String, String> {
 	@Override
 	protected String doInBackground(Object... arg) {
 		try {
-			sock = new TaskSocket();
-			sock.writeAuth();
-			
-			sock.out.writeUTF("updateStatus");
-			sock.out.writeDouble((Double)arg[0]);
-			sock.out.writeDouble((Double)arg[1]);
-			sock.out.writeUTF((String)arg[2]);
-			sock.out.flush();
-			String res = sock.in.readUTF();
-			return res;
+			synchronized(Monitor.getInstance()) {
+				if(Monitor.flag) Monitor.getInstance().wait();
+				sock = new TaskSocket();
+				sock.writeAuth();
+				
+				sock.out.writeUTF("updateStatus");
+				sock.out.writeDouble((Double)arg[0]);
+				sock.out.writeDouble((Double)arg[1]);
+				sock.out.writeUTF((String)arg[2]);
+				sock.out.flush();
+				String res = sock.in.readUTF();
+				return res;
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return "error";
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+		return "error";
 	}
 	
 	protected void onPostExecute(String result) {

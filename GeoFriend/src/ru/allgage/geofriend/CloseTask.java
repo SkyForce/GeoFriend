@@ -25,7 +25,6 @@ public class CloseTask extends AsyncTask<Object, Void, Void> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		act.finish();
 		return null;
 	}
 	

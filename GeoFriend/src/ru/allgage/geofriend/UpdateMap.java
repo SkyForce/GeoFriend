@@ -21,6 +21,7 @@ public class UpdateMap extends AsyncTask<Object, Object, Void> {
 	public static void setMap(GoogleMap mp) {
 		gmap = mp;
 		markers = new HashMap<String, Marker>();
+		isFirst = true;
 	}
 	
 	@Override

@@ -38,7 +38,6 @@ public class MapActivity extends FragmentActivity {
 	LocationListener listener;
 	String status;
 	long lastTime = 0;
-	HashMap<String, Marker> markers;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +56,7 @@ public class MapActivity extends FragmentActivity {
 			UpdateMap.setMap(mMap);
 			new UpdateMap().execute(0);
 		}
+		Monitor.getInstance().flag = true;
 		
 		listener = new LocationListener() {
 
@@ -98,16 +98,16 @@ public class MapActivity extends FragmentActivity {
 	    }
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 5f, listener);
 		
-		markers = new HashMap<String, Marker>();
 		//toCallAsynchronous();
 		
 		GCMRegistrar.checkDevice(this);
 		GCMRegistrar.checkManifest(this);
 		final String regId = GCMRegistrar.getRegistrationId(this);
 		
-		if (regId.equals("")) {
+		
+		//if (regId.equals("")) {
 		  GCMRegistrar.register(this, SENDER_ID);
-		}
+		//}
 	}
 	
 	@Override
@@ -125,9 +125,7 @@ public class MapActivity extends FragmentActivity {
 	        startActivityForResult(intent, 1);
 	        return true;
 	    case R.id.item2:
-	    	locationManager.removeUpdates(listener);
-	    	GCMRegistrar.unregister(this);
-	    	new CloseTask(this).execute();
+	    	finish();
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
@@ -156,6 +154,12 @@ public class MapActivity extends FragmentActivity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 	    super.onConfigurationChanged(newConfig);
+	}
+	
+	protected void onDestroy() {
+		locationManager.removeUpdates(listener);
+    	GCMRegistrar.unregister(this);
+    	new CloseTask(this).execute();
 	}
 
 }
