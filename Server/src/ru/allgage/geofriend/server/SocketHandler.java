@@ -125,7 +125,8 @@ public class SocketHandler implements Runnable {
                         .build();
                 List<String> list = userDAO.getOnlineIDs();
                 try {
-                    sender.send(msg, list, 2);
+                    if(!list.isEmpty())
+                        sender.send(msg, list, 2);
                 } catch (IOException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }

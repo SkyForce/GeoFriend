@@ -8,5 +8,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_map">GeoFriend</string>
     <string name="title_activity_status">StatusActivity</string>
+    <string name="title_activity_user">UserActivity</string>
 
 </resources>

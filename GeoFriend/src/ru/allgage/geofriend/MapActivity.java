@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,9 +25,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MapActivity extends FragmentActivity {
 	private static final String SENDER_ID = "119606192268";
@@ -49,6 +52,8 @@ public class MapActivity extends FragmentActivity {
 		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		
 		if(mMap != null) {
+			mMap.setOnInfoWindowClickListener(new clickWindowHandler(this));
+			
 			UpdateMap.setMap(mMap);
 			new UpdateMap().execute(0);
 		}
@@ -147,6 +152,29 @@ public class MapActivity extends FragmentActivity {
     {
 		moveTaskToBack(true);
     }
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+	    super.onConfigurationChanged(newConfig);
+	}
 
+}
+
+class clickWindowHandler implements OnInfoWindowClickListener {
+
+	Activity parent;
+	
+	clickWindowHandler(Activity p) {
+		parent = p;
+	}
+	
+	@Override
+	public void onInfoWindowClick(Marker arg0) {
+		// TODO Auto-generated method stub
+		Intent intent = new Intent(parent, UserActivity.class);
+		intent.putExtra("login", arg0.getTitle());
+		parent.startActivity(intent);
+	}
+	
 }
 

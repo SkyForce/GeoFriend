@@ -3,6 +3,7 @@ package ru.allgage.geofriend;
 import java.io.IOException;
 import java.util.HashMap;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -15,6 +16,7 @@ public class UpdateMap extends AsyncTask<Object, Object, Void> {
 	private static GoogleMap gmap;
     private static HashMap<String, Marker> markers;
     TaskSocket sock;
+    private static boolean isFirst = true;
 	
 	public static void setMap(GoogleMap mp) {
 		gmap = mp;
@@ -57,6 +59,10 @@ public class UpdateMap extends AsyncTask<Object, Object, Void> {
 	protected void onProgressUpdate(Object... status) {
 		synchronized(markers) {
 			if(status.length >= 4) {
+				if(isFirst) {
+					gmap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng((Double)status[1], (Double)status[2]), 14f), 2000, null);
+					isFirst = false;
+				}
 				Marker mrk = markers.get(status[0]);
 				if(mrk == null) {
 					mrk = (gmap.addMarker(new MarkerOptions()
