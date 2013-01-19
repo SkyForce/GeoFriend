@@ -48,7 +48,7 @@ public class StatusDAO {
 	 * @throws SQLException thrown on query fail.
 	 */
 	public List<Status> getActualStatuses(long timestamp) throws SQLException {
-		return selectStatuses(
+		try (PreparedStatement statement = connection.prepareStatement(
 				"SELECT " +
 						"users.id AS user_id, " +
 						"users.login AS login, " +
@@ -65,11 +65,15 @@ public class StatusDAO {
 						"MAX(s2.time) " +
 						"FROM statuses AS s2 " +
 						"WHERE s2.user_id = statuses.user_id) AND statuses.time > (?) " +
-						"GROUP BY statuses.user_id");
+						"GROUP BY statuses.user_id")) {
+			statement.setLong(1, timestamp);
+
+			return selectStatuses(statement);
+		}
 	}
 
 	public List<Status> getOnlineStatuses() throws SQLException {
-		return selectStatuses(
+		try (PreparedStatement statement = connection.prepareStatement(
 				"SELECT " +
 						"users.id AS user_id, " +
 						"users.login AS login, " +
@@ -86,19 +90,20 @@ public class StatusDAO {
 						"MAX(s2.time) " +
 						"FROM statuses AS s2 " +
 						"WHERE s2.user_id = statuses.user_id) AND users.isonline = 1 " +
-						"GROUP BY statuses.user_id");
+						"GROUP BY statuses.user_id")) {
+			return selectStatuses(statement);
+		}
 	}
 
 	/**
 	 * Selects the statuses from the database.
 	 *
-	 * @param sqlQuery query.
+	 * @param statement query statement.
 	 * @return list of selected objects.
 	 * @throws SQLException thrown on query fail.
 	 */
-	private List<Status> selectStatuses(String sqlQuery) throws SQLException {
-		try (PreparedStatement statement = connection.prepareStatement(sqlQuery);
-			 ResultSet resultSet = statement.executeQuery()) {
+	private List<Status> selectStatuses(PreparedStatement statement) throws SQLException {
+		try (ResultSet resultSet = statement.executeQuery()) {
 			List<Status> result = new ArrayList<>();
 			while (resultSet.next()) {
 				int userId = resultSet.getInt("user_id");
