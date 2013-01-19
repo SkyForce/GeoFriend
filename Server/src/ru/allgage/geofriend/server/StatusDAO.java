@@ -48,7 +48,7 @@ public class StatusDAO {
 	 * @throws SQLException thrown on query fail.
 	 */
 	public List<Status> getActualStatuses(long timestamp) throws SQLException {
-		try (PreparedStatement statement = connection.prepareStatement(
+		return selectStatuses(
 				"SELECT " +
 						"users.id AS user_id, " +
 						"users.login AS login, " +
@@ -65,38 +65,16 @@ public class StatusDAO {
 						"MAX(s2.time) " +
 						"FROM statuses AS s2 " +
 						"WHERE s2.user_id = statuses.user_id) AND statuses.time > (?) " +
-						"GROUP BY statuses.user_id")) {
-			statement.setTimestamp(1, new Timestamp(timestamp));
-			try (ResultSet resultSet = statement.executeQuery()) {
-				List<Status> result = new ArrayList<>();
-				while (resultSet.next()) {
-					int userId = resultSet.getInt("user_id");
-					String login = resultSet.getString("login");
-					String email = resultSet.getString("email");
-					int isOnline = resultSet.getInt("isonline");
-					int statusId = resultSet.getInt("status_id");
-					Timestamp dateTime = resultSet.getTimestamp("time");
-					double latitude = resultSet.getDouble("lat");
-					double longitude = resultSet.getDouble("lng");
-					String text = resultSet.getString("text");
-
-					User user = new User(userId, login, email, isOnline > 0);
-					Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
-
-					result.add(status);
-				}
-
-				return result;
-			}
-		}
+						"GROUP BY statuses.user_id");
 	}
 
 	public List<Status> getOnlineStatuses() throws SQLException {
-		try (PreparedStatement statement = connection.prepareStatement(
+		return selectStatuses(
 				"SELECT " +
 						"users.id AS user_id, " +
 						"users.login AS login, " +
 						"users.email AS email, " +
+						"1 AS isonline, " +
 						"statuses.id AS status_id, " +
 						"statuses.time AS time, " +
 						"statuses.lat AS lat, " +
@@ -108,27 +86,38 @@ public class StatusDAO {
 						"MAX(s2.time) " +
 						"FROM statuses AS s2 " +
 						"WHERE s2.user_id = statuses.user_id) AND users.isonline = 1 " +
-						"GROUP BY statuses.user_id")) {
-			try (ResultSet resultSet = statement.executeQuery()) {
-				List<Status> result = new ArrayList<>();
-				while (resultSet.next()) {
-					int userId = resultSet.getInt("user_id");
-					String login = resultSet.getString("login");
-					String email = resultSet.getString("email");
-					int statusId = resultSet.getInt("status_id");
-					Timestamp dateTime = resultSet.getTimestamp("time");
-					double latitude = resultSet.getDouble("lat");
-					double longitude = resultSet.getDouble("lng");
-					String text = resultSet.getString("text");
+						"GROUP BY statuses.user_id");
+	}
 
-					User user = new User(userId, login, email, true);
-					Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
+	/**
+	 * Selects the statuses from the database.
+	 *
+	 * @param sqlQuery query.
+	 * @return list of selected objects.
+	 * @throws SQLException thrown on query fail.
+	 */
+	private List<Status> selectStatuses(String sqlQuery) throws SQLException {
+		try (PreparedStatement statement = connection.prepareStatement(sqlQuery);
+			 ResultSet resultSet = statement.executeQuery()) {
+			List<Status> result = new ArrayList<>();
+			while (resultSet.next()) {
+				int userId = resultSet.getInt("user_id");
+				String login = resultSet.getString("login");
+				String email = resultSet.getString("email");
+				boolean isOnline = resultSet.getBoolean("isonline");
+				int statusId = resultSet.getInt("status_id");
+				Timestamp dateTime = resultSet.getTimestamp("time");
+				double latitude = resultSet.getDouble("lat");
+				double longitude = resultSet.getDouble("lng");
+				String text = resultSet.getString("text");
 
-					result.add(status);
-				}
+				User user = new User(userId, login, email, isOnline);
+				Status status = new Status(statusId, user, dateTime, latitude, longitude, text);
 
-				return result;
+				result.add(status);
 			}
+
+			return result;
 		}
 	}
 }
