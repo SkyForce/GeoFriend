@@ -1,28 +1,20 @@
 package ru.allgage.geofriend.server;
 
-import java.util.Date;
-
 /**
  * Status class.
  */
 public class Status {
-	private int id;
-	private User user;
-	private Date dateTime;
-	private double latitude;
-	private double longitude;
-	private String text;
+	private final Integer id;
+	private final User user;
+	private final String text;
 
-	Status(Integer id, User user, Date dateTime, double latitude, double longitude, String text) {
+	Status(Integer id, User user, String text) {
 		this.id = id;
 		this.user = user;
-		this.dateTime = dateTime;
-		this.latitude = latitude;
-		this.longitude = longitude;
 		this.text = text;
 	}
 
-	int getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -30,20 +22,8 @@ public class Status {
 		return user;
 	}
 
-	public Date getDateTime() {
-		return dateTime;
-	}
-
-	public double getLatitude() {
-		return latitude;
-	}
-
-	public double getLongitude() {
-		return longitude;
-	}
 
 	public String getText() {
 		return text;
 	}
-
 }

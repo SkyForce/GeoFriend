@@ -18,12 +18,16 @@ CREATE TABLE statuses(
 
 CREATE TABLE coordinates(
 	id 		  INTEGER PRIMARY KEY AUTO_INCREMENT,
+	user_id   INTEGER,
+    status_id INTEGER,
 	time      TIMESTAMP,
 	lat       DOUBLE,
 	lng       DOUBLE,
-	status_id INTEGER,
+	INDEX (user_id),
 	INDEX (status_id),
-	INDEX (time),
+    INDEX (time),
+	FOREIGN KEY (user_id)
+    	REFERENCES users(id)
 	FOREIGN KEY (status_id)
 		REFERENCES statuses(id)
 );

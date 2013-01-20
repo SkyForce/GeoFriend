@@ -15,17 +15,18 @@ import java.util.Random;
  * Client socket handler thread.
  */
 public class SocketHandler implements Runnable {
-	final String ERROR_HEADER = "error";
-	final String LOGGED_IN_HEADER = "logged in";
-	final String USER_STATUS_HEADER = "status";
+	private final String ERROR_HEADER = "error";
+	private final String LOGGED_IN_HEADER = "logged in";
+	private final String USER_STATUS_HEADER = "status";
 
-	final Socket socket;
-	final UserDAO userDAO;
-	final StatusDAO statusDAO;
+	private final Socket socket;
+	private final UserDAO userDAO;
+	private final StatusDAO statusDAO;
+	private final CoordinateDAO coordinateDAO;
 
-	User loggedUser;
+	private User loggedUser;
 
-	Sender sender;
+	final Sender sender;
 
 	/**
 	 * Creates a socket handler.
@@ -34,10 +35,12 @@ public class SocketHandler implements Runnable {
 	 * @param userDAO   user data access object.
 	 * @param statusDAO status data access object.
 	 */
-	SocketHandler(Socket socket, UserDAO userDAO, StatusDAO statusDAO) {
+	SocketHandler(Socket socket, UserDAO userDAO, StatusDAO statusDAO, CoordinateDAO coordinateDAO) {
 		this.socket = socket;
 		this.userDAO = userDAO;
 		this.statusDAO = statusDAO;
+		this.coordinateDAO = coordinateDAO;
+
 		sender = new Sender("AIzaSyBjswMkWZaA3SSSXvbvcEMpqFUxR8p_E1M");
 		System.out.println(socket.getInetAddress().toString());
 	}
@@ -96,6 +99,14 @@ public class SocketHandler implements Runnable {
 				} else {
 					writeError(dout, "error updating status");
 				}
+			} else if (command.equals("updatePosition")) {
+				double lat = din.readDouble();
+				double lng = din.readDouble();
+				if (coordinateDAO.update(loggedUser, lat, lng)) {
+					// TODO: push message?
+				} else {
+					writeError(dout, "Error updating coordinates");
+				}
 			} else if (command.equals("getOnlineStatuses")) {
 				writeStatuses(dout, statusDAO.getOnlineStatuses());
 			} else if (command.equals("updateAllStatuses")) {
@@ -152,14 +163,14 @@ public class SocketHandler implements Runnable {
 				}
                 else if(command.equals("getOnlineStatuses")) {
                     for (Status status : statusDAO.getOnlineStatuses()) {
-                        writeStatus(dout, status);
+                        writeCoordinate(dout, status);
                     }
                     writeMessages(dout, "end");
                 }
                 else if(command.equals("updateAllStatuses")) {
                     long timestamp = din.readLong();
 					for (Status status : statusDAO.getActualStatuses(timestamp)) {
-						writeStatus(dout, status);
+						writeCoordinate(dout, status);
 					}
                     writeMessages(dout, "end");
 				}
@@ -219,32 +230,32 @@ public class SocketHandler implements Runnable {
 	/**
 	 * Writes the status collection to the data stream.
 	 *
-	 * @param stream   the data stream.
-	 * @param statuses the statuses collection.
+	 * @param stream      the data stream.
+	 * @param coordinates the coordinates collection.
 	 * @throws IOException thrown in case something going wrong.
 	 */
-	private void writeStatuses(DataOutputStream stream, Collection<Status> statuses) throws IOException {
-		for (Status status : statuses) {
-			writeStatus(stream, status);
+	private void writeStatuses(DataOutputStream stream, Collection<Coordinate> coordinates) throws IOException {
+		for (Coordinate coordinate : coordinates) {
+			writeCoordinate(stream, coordinate);
 		}
 
 		writeMessages(stream, "end");
 	}
 
 	/**
-	 * Writes the status message to the data stream.
+	 * Writes the coordinate message to the data stream.
 	 *
-	 * @param stream data stream.
-	 * @param status user status.
+	 * @param stream     data stream.
+	 * @param coordinate user coordinate.
 	 * @throws IOException thrown in case something going wrong.
 	 */
-	private void writeStatus(DataOutputStream stream, Status status) throws IOException {
+	private void writeCoordinate(DataOutputStream stream, Coordinate coordinate) throws IOException {
 		stream.writeUTF(USER_STATUS_HEADER);
-		stream.writeUTF(status.getUser().getLogin());
-		stream.writeDouble(status.getLatitude());
-		stream.writeDouble(status.getLongitude());
-		stream.writeUTF(status.getText());
-		stream.writeBoolean(status.getUser().isOnline());
+		stream.writeUTF(coordinate.getUser().getLogin());
+		stream.writeDouble(coordinate.getLatitude());
+		stream.writeDouble(coordinate.getLongitude());
+		stream.writeUTF(coordinate.getStatus().getText());
+		stream.writeBoolean(coordinate.getUser().isOnline());
 		stream.flush();
 	}
 }

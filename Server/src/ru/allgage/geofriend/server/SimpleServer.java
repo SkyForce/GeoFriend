@@ -18,8 +18,6 @@ import java.util.concurrent.Executors;
  * Main server class.
  */
 public class SimpleServer {
-	static List<Integer> loggedUsers = new ArrayList<>();
-
 	public static void main(String[] args)
 			throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
 		Properties properties = new Properties();
@@ -38,12 +36,13 @@ public class SimpleServer {
 		UserDAO userDAO = new UserDAO(connect);
 		userDAO.clearOnlines();
 		StatusDAO statusDAO = new StatusDAO(connect);
+		CoordinateDAO coordinateDAO = new CoordinateDAO(connect);
 
 		ServerSocket server = new ServerSocket(port);
 		ExecutorService pool = Executors.newCachedThreadPool();
 		while (true) {
 			Socket sock = server.accept();
-			pool.submit(new SocketHandler(sock, userDAO, statusDAO));
+			pool.submit(new SocketHandler(sock, userDAO, statusDAO, coordinateDAO));
 		}
 	}
 }
