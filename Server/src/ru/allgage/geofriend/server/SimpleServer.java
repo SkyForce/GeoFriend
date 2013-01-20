@@ -18,9 +18,10 @@ import java.util.concurrent.Executors;
  * Main server class.
  */
 public class SimpleServer {
-	static List<Integer> loggedUsers = new ArrayList<Integer>();
+	static List<Integer> loggedUsers = new ArrayList<>();
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
+	public static void main(String[] args)
+			throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
 		Properties properties = new Properties();
 		try (InputStream stream = new FileInputStream("server.properties")) {
 			properties.load(stream);
@@ -36,7 +37,7 @@ public class SimpleServer {
 		Connection connect = DriverManager.getConnection(connectionString);
 		UserDAO userDAO = new UserDAO(connect);
 		userDAO.clearOnlines();
-        StatusDAO statusDAO = new StatusDAO(connect);
+		StatusDAO statusDAO = new StatusDAO(connect);
 
 		ServerSocket server = new ServerSocket(port);
 		ExecutorService pool = Executors.newCachedThreadPool();
