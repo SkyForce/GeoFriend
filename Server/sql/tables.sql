@@ -10,12 +10,20 @@ CREATE TABLE users(
 CREATE TABLE statuses(
     id      INTEGER PRIMARY KEY AUTO_INCREMENT,
     user_id INTEGER,
-    time    TIMESTAMP,
     status  VARCHAR(256),
-    lat     DOUBLE,
-    lng     DOUBLE,
-    INDEX (time),
     INDEX (user_id),
     FOREIGN KEY (user_id)
         REFERENCES users(id)
+);
+
+CREATE TABLE coordinates(
+	id 		  INTEGER PRIMARY KEY AUTO_INCREMENT,
+	time      TIMESTAMP,
+	lat       DOUBLE,
+	lng       DOUBLE,
+	status_id INTEGER,
+	INDEX (status_id),
+	INDEX (time),
+	FOREIGN KEY (status_id)
+		REFERENCES statuses(id)
 );
