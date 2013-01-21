@@ -22,16 +22,22 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
 	protected void onMessage(Context arg0, Intent intent) {
 		// TODO Auto-generated method stub
+		String command = intent.getStringExtra("command");
 		String log = intent.getStringExtra("user");
-		String offline = intent.getStringExtra("offline");
-		if(offline == null) {
+		
+		if(command.equals("offline")) {
+			new UpdateMap().execute("offline", log);	
+		}
+		else if(command.equals("updateStatus")){
 			double lat = Double.parseDouble(intent.getStringExtra("lat"));
 			double lng = Double.parseDouble(intent.getStringExtra("lng"));
 			String text = intent.getStringExtra("status");
-			new UpdateMap().execute(log, lat, lng, text);
+			new UpdateMap().execute("updateStatus", log, lat, lng, text);
 		}
-		else {
-			new UpdateMap().execute(log, offline);
+		else if(command.equals("updatePosition")) {
+			double lat = Double.parseDouble(intent.getStringExtra("lat"));
+			double lng = Double.parseDouble(intent.getStringExtra("lng"));
+			new UpdateMap().execute("updatePosition", log, lat, lng);
 		}
 	}
 

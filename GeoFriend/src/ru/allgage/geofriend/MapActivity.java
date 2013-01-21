@@ -36,7 +36,6 @@ public class MapActivity extends FragmentActivity {
 	private GoogleMap mMap;
 	LocationManager locationManager;
 	LocationListener listener;
-	String status;
 	long lastTime = 0;
 	
 	@Override
@@ -54,7 +53,7 @@ public class MapActivity extends FragmentActivity {
 			mMap.setOnInfoWindowClickListener(new clickWindowHandler(this));
 			
 			UpdateMap.setMap(mMap);
-			new UpdateMap().execute(0);
+			new UpdateMap().execute("allStatuses");
 		}
 		Monitor.getInstance().flag = true;
 		
@@ -62,7 +61,7 @@ public class MapActivity extends FragmentActivity {
 
 		    @Override
 		    public void onLocationChanged(Location location) {
-		        new SendTask().execute(location.getLatitude(), location.getLongitude(), status);
+		        new SendTask().execute("updatePosition", location.getLatitude(), location.getLongitude());
 		    }
 
 			@Override
@@ -89,12 +88,11 @@ public class MapActivity extends FragmentActivity {
 		        0,             // 10 meters.
 		        listener);**/
 		SharedPreferences preferences = getSharedPreferences("settings", 0);
-		status = preferences.getString("status", "");
 		
 		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
 		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 	    {
-			new CloseTask(this).execute();
+			finish();
 	    }
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 5f, listener);
 		
@@ -134,10 +132,10 @@ public class MapActivity extends FragmentActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (data == null) return;
-	    status = data.getStringExtra("status");
+	    String status = data.getStringExtra("status");
 	    Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 	    if(loc != null)
-	    	new SendTask().execute(loc.getLatitude(), loc.getLongitude(), status);
+	    	new SendTask().execute("updateStatus", loc.getLatitude(), loc.getLongitude(), status);
 	    
 	    Editor ed = getSharedPreferences("settings", 0).edit();
 	    ed.putString("status", status);

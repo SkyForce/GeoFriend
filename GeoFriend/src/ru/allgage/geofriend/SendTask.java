@@ -18,11 +18,18 @@ public class SendTask extends AsyncTask<Object, String, String> {
 				if(Monitor.flag) Monitor.getInstance().wait();
 				sock = new TaskSocket();
 				sock.writeAuth();
-				
-				sock.out.writeUTF("updateStatus");
-				sock.out.writeDouble((Double)arg[0]);
-				sock.out.writeDouble((Double)arg[1]);
-				sock.out.writeUTF((String)arg[2]);
+				String command = arg[0].toString();
+				if(command.equals("updateStatus")) {
+					sock.out.writeUTF("updateStatus");
+					sock.out.writeDouble((Double)arg[1]);
+					sock.out.writeDouble((Double)arg[2]);
+					sock.out.writeUTF((String)arg[3]);
+				}
+				else if(command.equals("updatePosition")) {
+					sock.out.writeUTF("updatePosition");
+					sock.out.writeDouble((Double)arg[1]);
+					sock.out.writeDouble((Double)arg[2]);
+				}
 				sock.out.flush();
 				String res = sock.in.readUTF();
 				return res;

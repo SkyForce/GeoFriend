@@ -88,6 +88,7 @@ public class SocketHandler implements Runnable {
 				if (statusDAO.create(loggedUser, lat, lng, status)) {
 					writeMessages(dout, "success");
 					Message msg = new Message.Builder()
+                            .addData("command", "updateStatus")
 							.addData("user", loggedUser.getLogin())
 							.addData("lat", String.valueOf(lat))
 							.addData("lng", String.valueOf(lng))
@@ -103,7 +104,16 @@ public class SocketHandler implements Runnable {
 				double lat = din.readDouble();
 				double lng = din.readDouble();
 				if (coordinateDAO.update(loggedUser, lat, lng)) {
-					// TODO: push message?
+                    writeMessages(dout, "success");
+                    Message msg = new Message.Builder()
+                            .addData("command", "updatePosition")
+                            .addData("user", loggedUser.getLogin())
+                            .addData("lat", String.valueOf(lat))
+                            .addData("lng", String.valueOf(lng))
+                            .build();
+                    List<String> list = userDAO.getOnlineIDs();
+                    if (!list.isEmpty())
+                        sender.send(msg, list, 2);
 				} else {
 					writeError(dout, "Error updating coordinates");
 				}
@@ -122,8 +132,8 @@ public class SocketHandler implements Runnable {
 			} else if (command.equals("offline")) {
 				userDAO.setOffline(loggedUser.getId());
 				Message msg = new Message.Builder()
+                        .addData("command", "offline")
 						.addData("user", loggedUser.getLogin())
-						.addData("offline", "offline")
 						.build();
 				List<String> list = userDAO.getOnlineIDs();
 				try {
@@ -140,50 +150,6 @@ public class SocketHandler implements Runnable {
 
 			Random rnd = new Random();
 
-			/**while (true) {
-				String command = din.readUTF();
-				if (command.equals("updateStatus")) {
-					double lat = din.readDouble();
-					double lng = din.readDouble();
-					String status = din.readUTF();
-					if (statusDAO.create(loggedUser, lat, lng, status)) {
-						writeMessages(dout, "success");
-                        Message msg = new Message.Builder()
-                                .addData("user", loggedUser.getLogin())
-                                .addData("lat", String.valueOf(lat))
-                                .addData("lng", String.valueOf(lng))
-                                .addData("status", status)
-                                .build();
-                        List<String> list = userDAO.getOnlineIDs();
-                        if(!list.isEmpty())
-                            sender.send(msg, list, 2);
-					} else {
-						writeError(dout, "error updating status");
-					}
-				}
-                else if(command.equals("getOnlineStatuses")) {
-                    for (Status status : statusDAO.getOnlineStatuses()) {
-                        writeCoordinate(dout, status);
-                    }
-                    writeMessages(dout, "end");
-                }
-                else if(command.equals("updateAllStatuses")) {
-                    long timestamp = din.readLong();
-					for (Status status : statusDAO.getActualStatuses(timestamp)) {
-						writeCoordinate(dout, status);
-					}
-                    writeMessages(dout, "end");
-				}
-                else if(command.equals("add device")) {
-                    String regID = din.readUTF();
-                    userDAO.updateRegID(regID, loggedUser.getId());
-                    dout.writeUTF("ok");
-                }
-                else {
-					writeError(dout, "invalid command sequence");
-					return;
-				}
-			}**/
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
