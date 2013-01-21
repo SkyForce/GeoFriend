@@ -78,7 +78,7 @@ public class StatusDAO {
 						"coordinates.id AS coordinate_id, " +
 						"coordinates.time AS time, " +
 						"coordinates.lat AS lat, " +
-						"coordinates.lng AS lng, " +
+						"coordinates.lng AS lng " +
 						"FROM statuses " +
 						"JOIN coordinates ON (coordinates.status_id = statuses.id) " +
 						"JOIN users ON (statuses.user_id = users.id) " +
@@ -106,7 +106,7 @@ public class StatusDAO {
 						"coordinates.id AS coordinate_id, " +
 						"coordinates.time AS time, " +
 						"coordinates.lat AS lat, " +
-						"coordinates.lng AS lng, " +
+						"coordinates.lng AS lng " +
 						"FROM statuses " +
 						"JOIN coordinates ON (coordinates.status_id = statuses.id) " +
 						"JOIN users ON (statuses.user_id = users.id) " +
@@ -138,7 +138,7 @@ public class StatusDAO {
 						"coordinates.id AS coordinate_id, " +
 						"coordinates.time AS time, " +
 						"coordinates.lat AS lat, " +
-						"coordinates.lng AS lng, " +
+						"coordinates.lng AS lng " +
 						"FROM statuses " +
 						"JOIN users ON (statuses.user_id = users.id) " +
 						"JOIN (SELECT c2.status_id, MAX(c2.time) FROM coordinates c2" +
