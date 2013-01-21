@@ -27,7 +27,7 @@ CREATE TABLE coordinates(
 	INDEX (status_id),
     INDEX (time),
 	FOREIGN KEY (user_id)
-    	REFERENCES users(id)
+    	REFERENCES users(id),
 	FOREIGN KEY (status_id)
 		REFERENCES statuses(id)
 );
