@@ -96,6 +96,7 @@ public class MapActivity extends FragmentActivity {
 		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 	    {
 			showDialog(0);
+			
 			finish();
 	    }
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 5f, listener);
