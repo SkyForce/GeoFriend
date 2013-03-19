@@ -19,6 +19,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +40,7 @@ public class MapActivity extends FragmentActivity {
 	LocationListener listener;
 	long lastTime = 0;
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,6 +95,7 @@ public class MapActivity extends FragmentActivity {
 		//locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 240000, 20, listener);
 		if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 	    {
+			showDialog(0);
 			finish();
 	    }
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 30000, 5f, listener);
@@ -106,6 +110,23 @@ public class MapActivity extends FragmentActivity {
 		//if (regId.equals("")) {
 		  GCMRegistrar.register(this, SENDER_ID);
 		//}
+	}
+	
+	protected Dialog onCreateDialog(int id) {
+	      if (id == 0) {
+	        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+	        // заголовок
+	        adb.setTitle("GPS");
+	        // сообщение
+	        adb.setMessage("Enable GPS");
+	        // иконка
+	        adb.setIcon(android.R.drawable.ic_dialog_info);
+	        // кнопка нейтрального ответа
+	        adb.setNeutralButton("OK", null);
+	        // создаем диалог
+	        return adb.create();
+	      }
+	      return super.onCreateDialog(id);
 	}
 	
 	@Override
