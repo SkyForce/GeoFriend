@@ -134,17 +134,17 @@ public class StatusDAO {
 						"users.email AS email, " +
 						"users.isonline AS isonline, " +
 						"statuses.id AS status_id, " +
-						"statuses.status AS text " +
+						"statuses.status AS text, " +
 						"coordinates.id AS coordinate_id, " +
 						"coordinates.time AS time, " +
 						"coordinates.lat AS lat, " +
 						"coordinates.lng AS lng " +
 						"FROM statuses " +
 						"JOIN users ON (statuses.user_id = users.id) " +
-						"JOIN (SELECT c2.status_id, MAX(c2.time) FROM coordinates c2" +
+						"JOIN (SELECT c2.status_id, MAX(c2.time) AS time FROM coordinates c2" +
 						"	GROUP BY c2.status_id) AS max_times ON (max_times.status_id = statuses.id) " +
-						"JOIN coordinates ON (coordinates.status_id = max_times.status_id " +
-						"	AND coordinates.time = max_times.time)" +
+						"JOIN coordinates ON ((coordinates.status_id = max_times.status_id) " +
+						"AND (coordinates.time = max_times.time)) " +
 						"WHERE users.login = ? " +
 						"ORDER BY coordinates.time DESC " +
 						"LIMIT 10")) {

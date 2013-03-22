@@ -1,17 +1,31 @@
 package ru.allgage.geofriend;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class UserActivity extends Activity {
 
+	ArrayList<String> statuses;
+	String login;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_user);
 		
-		setTitle(getIntent().getStringExtra("login"));
+		login = getIntent().getStringExtra("login");
+		
+		setTitle(login);
+		
+		ListView lvMain = (ListView) findViewById(R.id.listView1);
+		
+		new GetStatusesTask(lvMain, this).execute(login);
+		
 	}
 
 	@Override
