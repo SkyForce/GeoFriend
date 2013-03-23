@@ -45,16 +45,22 @@ public class LoginActivity extends Activity {
 	
 	public void regClick(View v) {
 		EditText email = (EditText) findViewById(R.id.editText3);
-		if(((CheckBox)v).isChecked())
+		EditText info = (EditText) findViewById(R.id.editText4);
+		if(((CheckBox)v).isChecked()) {
 			email.setVisibility(View.VISIBLE);
-		else email.setVisibility(View.INVISIBLE);
+			info.setVisibility(View.VISIBLE);
+		}
+		else {
+			email.setVisibility(View.INVISIBLE);
+			info.setVisibility(View.INVISIBLE);
+		}
 	}
 
 	public void sendData(View v) {
 		boolean checked = ((CheckBox) findViewById(R.id.checkBox1)).isChecked();
 		String s1 = ((EditText) findViewById(R.id.editText1)).getText().toString();
 		String s2 = ((EditText) findViewById(R.id.editText2)).getText().toString();
-		String s3 = null;
+		String s3 = null, s4 = null;
 		
 		Editor ed = getSharedPreferences("settings", 0).edit();
 		ed.putString("login", s1);
@@ -65,7 +71,8 @@ public class LoginActivity extends Activity {
 		
 		if(checked) {
 			s3 = ((EditText) findViewById(R.id.editText3)).getText().toString();
-			task.execute(s1,s2,s3);
+			s4 = ((EditText) findViewById(R.id.editText4)).getText().toString();
+			task.execute(s1,s2,s3,s4);
 		}
 		else {
 			task.execute(s1,s2);

@@ -29,7 +29,7 @@ public class UserDAO {
 	 */
 	public User load(String login, String password) throws SQLException {
 		try (PreparedStatement statement = connection.prepareStatement(
-				"SELECT id, login, email FROM users WHERE login = ? AND password = MD5(?)")) {
+				"SELECT id, login, email, info FROM users WHERE login = ? AND password = MD5(?)")) {
 			statement.setString(1, login);
 			statement.setString(2, password);
 
@@ -38,12 +38,13 @@ public class UserDAO {
                     Integer id = resultSet.getInt("id");
                     String userLogin = resultSet.getString("login");
                     String email = resultSet.getString("email");
+                    String info = resultSet.getString("info");
 
                     try(Statement st = connection.createStatement()) {
                         st.executeUpdate("UPDATE users SET isonline = 1 WHERE id = "+String.valueOf(id));
                     }
 
-                    return new User(id, userLogin, email, true);
+                    return new User(id, userLogin, email, true, info);
                 }
 			}
             return null;
@@ -58,12 +59,13 @@ public class UserDAO {
 	 * @param email    user e-mail.
 	 * @return created user; null if user was not created.
 	 */
-	public User create(String login, String password, String email) {
+	public User create(String login, String password, String email, String info) {
 		try (PreparedStatement statement = connection.prepareStatement(
-				"INSERT INTO users (login, password, email) VALUES(?, MD5(?), ?)")) {
+				"INSERT INTO users (login, password, email, info) VALUES(?, MD5(?), ?, ?)")) {
 			statement.setString(1, login);
 			statement.setString(2, password);
 			statement.setString(3, email);
+            statement.setString(4, info);
 
 			if (statement.executeUpdate() > 0) {
 				return load(login, password); // TODO: optimize
@@ -138,5 +140,20 @@ public class UserDAO {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return list;
+    }
+
+    public String getInfo(String login) {
+        String result = "";
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT info FROM users WHERE login = ?")) {
+           statement.setString(1, login);
+           ResultSet rs = statement.executeQuery();
+           rs.next();
+           result = rs.getString("info");
+
+        } catch (SQLException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return result;
     }
 }

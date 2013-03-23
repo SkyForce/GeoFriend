@@ -100,6 +100,7 @@ public class StatusDAO {
 						"users.id AS user_id, " +
 						"users.login AS login, " +
 						"users.email AS email, " +
+                        "users.info AS info, " +
 						"1 AS isonline, " +
 						"statuses.id AS status_id, " +
 						"statuses.status AS text, " +
@@ -133,6 +134,7 @@ public class StatusDAO {
 						"users.login AS login, " +
 						"users.email AS email, " +
 						"users.isonline AS isonline, " +
+                        "users.info AS info, " +
 						"statuses.id AS status_id, " +
 						"statuses.status AS text, " +
 						"coordinates.id AS coordinate_id, " +
@@ -170,13 +172,14 @@ public class StatusDAO {
 				Integer coordinateId = resultSet.getInt("coordinate_id");
 				String login = resultSet.getString("login");
 				String email = resultSet.getString("email");
+                String info = resultSet.getString("info");
 				boolean isOnline = resultSet.getBoolean("isonline");
 				String text = resultSet.getString("text");
 				Timestamp dateTime = resultSet.getTimestamp("time");
 				double latitude = resultSet.getDouble("lat");
 				double longitude = resultSet.getDouble("lng");
 
-				User user = new User(userId, login, email, isOnline);
+				User user = new User(userId, login, email, isOnline, info);
 				Status status = new Status(statusId, user, text);
 				Coordinate coordinate = new Coordinate(coordinateId, user, status, dateTime, latitude, longitude);
 

@@ -42,7 +42,7 @@ public class LoginTask extends AsyncTask<String, String, String> {
 				sock.writeMessages("login");
 			}
 			else {
-				sock.writeMessages("register", str[2]);
+				sock.writeMessages("register", str[2], str[3]);
 			}
 			String res = din.readUTF();
 			return res;

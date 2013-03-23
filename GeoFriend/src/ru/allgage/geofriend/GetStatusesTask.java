@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 public class GetStatusesTask extends AsyncTask<String, String, Void> {
@@ -14,11 +15,14 @@ public class GetStatusesTask extends AsyncTask<String, String, Void> {
 	ListView lv; 
 	Context context;
 	TaskSocket sock;
+	String info;
+	EditText inf;
 	
-	GetStatusesTask(ListView l, Context cont) {
+	GetStatusesTask(ListView l, EditText ed, Context cont) {
 		lv = l;
 		statuses = new ArrayList<String>();
 		context = cont;
+		inf = ed;
 	}
 	
 	@Override
@@ -31,6 +35,7 @@ public class GetStatusesTask extends AsyncTask<String, String, Void> {
 				sock.out.writeUTF("getUserStatuses");
 				sock.out.writeUTF(arg[0]);
 				sock.out.flush();
+				info = sock.in.readUTF();
 				String status = sock.in.readUTF();
 				while(!status.equals("end")) {
 					sock.in.readUTF(); // login
@@ -52,9 +57,10 @@ public class GetStatusesTask extends AsyncTask<String, String, Void> {
 	@Override
 	protected void onPostExecute(Void arg) {
 		// создаем адаптер
+		inf.setText(info);
 	    ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
 	        android.R.layout.simple_list_item_1, statuses);
-
+	    
 	    // присваиваем адаптер списку
 	    lv.setAdapter(adapter);
 	    sock.close();

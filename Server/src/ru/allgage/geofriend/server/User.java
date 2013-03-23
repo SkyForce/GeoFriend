@@ -8,12 +8,14 @@ public class User {
 	private final String login;
 	private final String email;
 	private final boolean isOnline;
+    private final String info;
 
-	User(int id, String login, String email, boolean isOnline) {
+	User(int id, String login, String email, boolean isOnline, String info) {
 		this.id = id;
 		this.login = login;
 		this.email = email;
 		this.isOnline = isOnline;
+        this.info = info;
 	}
 
 	int getId() {
@@ -31,4 +33,8 @@ public class User {
 	public boolean isOnline() {
 		return isOnline;
 	}
+
+    public String getInfo() {
+        return info;
+    }
 }

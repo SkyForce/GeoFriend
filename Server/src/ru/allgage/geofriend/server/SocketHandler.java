@@ -71,8 +71,8 @@ public class SocketHandler implements Runnable {
 
 			} else if (command.equals("register")) {
 				String email = din.readUTF();
-
-				loggedUser = userDAO.create(user, pass, email);
+                String info = din.readUTF();
+				loggedUser = userDAO.create(user, pass, email, info);
 				if (loggedUser == null) {
 					writeError(dout, "cannot register user");
 					return;
@@ -124,6 +124,7 @@ public class SocketHandler implements Runnable {
 				writeStatuses(dout, statusDAO.getActualStatuses(timestamp));
 			} else if (command.equals("getUserStatuses")) {
 				String userLogin = din.readUTF();
+                writeMessages(dout, userDAO.getInfo(userLogin));
 				writeStatuses(dout, statusDAO.getHistoricalStatuses(userLogin));
 			} else if (command.equals("add device")) {
 				String regID = din.readUTF();

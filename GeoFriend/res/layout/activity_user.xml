@@ -4,15 +4,22 @@
     android:layout_height="match_parent"
     tools:context=".UserActivity" >
 
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:inputType="textMultiLine" />
+
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginBottom="76dp"
-        android:layout_marginRight="49dp" >
-
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editText1" >
     </ListView>
 
 </RelativeLayout>

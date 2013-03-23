@@ -28,32 +28,12 @@
         android:hint="Password"
         android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/editText2"
-        android:layout_below="@+id/editText2"
-        android:layout_marginTop="88dp"
-        android:text="Send"
-        android:onClick="sendData" />
-
-    <CheckBox
-        android:id="@+id/checkBox1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button1"
-        android:layout_alignBottom="@+id/button1"
-        android:layout_alignLeft="@+id/editText2"
-        android:checked="false"
-        android:onClick="regClick"
-        android:text="Register" />
-
     <EditText
         android:id="@+id/editText3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/editText2"
+        android:layout_alignRight="@+id/editText4"
         android:layout_below="@+id/editText2"
         android:layout_marginTop="22dp"
         android:ems="10"
@@ -61,13 +41,45 @@
         android:inputType="textEmailAddress"
         android:visibility="invisible" />
 
+    <EditText
+        android:id="@+id/editText4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/editText2"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:hint="Contact"
+        android:inputType="textMultiLine"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/editText3"
+        android:layout_below="@+id/editText4"
+        android:layout_marginTop="55dp"
+        android:onClick="sendData"
+        android:text="Send" />
+
+    <CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/button1"
+        android:layout_alignBottom="@+id/button1"
+        android:layout_alignLeft="@+id/editText3"
+        android:checked="false"
+        android:onClick="regClick"
+        android:text="Register" />
+
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/checkBox1"
-        android:layout_below="@+id/button1"
-        android:layout_marginTop="43dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/checkBox1"
+        android:layout_marginBottom="27dp"
         android:text="TextView" />
 
 </RelativeLayout>

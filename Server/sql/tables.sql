@@ -3,6 +3,7 @@ CREATE TABLE users(
     login    VARCHAR(64) UNIQUE,
     password CHAR(32),
     email    VARCHAR(128),
+    info     VARCHAR(128),
 	isonline BOOL,
 	reg_id   VARCHAR(256)
 );

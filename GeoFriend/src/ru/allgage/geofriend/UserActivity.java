@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 public class UserActivity extends Activity {
@@ -23,8 +24,9 @@ public class UserActivity extends Activity {
 		setTitle(login);
 		
 		ListView lvMain = (ListView) findViewById(R.id.listView1);
+		EditText edMain = (EditText) findViewById(R.id.editText1);
 		
-		new GetStatusesTask(lvMain, this).execute(login);
+		new GetStatusesTask(lvMain, edMain, this).execute(login);
 		
 	}
 
