@@ -95,7 +95,7 @@ public class SocketHandler implements Runnable {
 							.addData("status", status)
 							.build();
 					List<String> list = userDAO.getOnlineIDs();
-					if (!list.isEmpty())
+					if (!list.isEmpty() && sender != null)
 						sender.send(msg, list, 2);
 				} else {
 					writeError(dout, "error updating status");
