@@ -35,16 +35,19 @@ public class SimpleServer {
 		Connection connect = DriverManager.getConnection(connectionString);
 		UserDAO userDAO = new UserDAO(connect);
 		userDAO.clearOnlines();
+        StatusDAO statusDAO = new StatusDAO(connect);
+        CoordinateDAO coordinateDAO = new CoordinateDAO(connect);
 
 		ServerSocket server = new ServerSocket(port);
 		ExecutorService pool = Executors.newCachedThreadPool();
 		while (true) {
 			Socket sock = server.accept();
-            connect = DriverManager.getConnection(connectionString);
-            userDAO = new UserDAO(connect);
-            StatusDAO statusDAO = new StatusDAO(connect);
-            CoordinateDAO coordinateDAO = new CoordinateDAO(connect);
-
+            if(connect.isClosed()) {
+                connect = DriverManager.getConnection(connectionString);
+                userDAO = new UserDAO(connect);
+                statusDAO = new StatusDAO(connect);
+                coordinateDAO = new CoordinateDAO(connect);
+            }
             pool.submit(new SocketHandler(sock, userDAO, statusDAO, coordinateDAO));
 		}
 	}
