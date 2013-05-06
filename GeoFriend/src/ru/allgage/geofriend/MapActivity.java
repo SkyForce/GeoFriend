@@ -39,6 +39,7 @@ public class MapActivity extends FragmentActivity {
 	LocationManager locationManager;
 	LocationListener listener;
 	long lastTime = 0;
+	boolean isFirstUpdate = true;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -59,11 +60,17 @@ public class MapActivity extends FragmentActivity {
 			new UpdateMap().execute("allStatuses");
 		}
 		Monitor.getInstance().flag = true;
+		isFirstUpdate = false;
 		
 		listener = new LocationListener() {
 
 		    @Override
 		    public void onLocationChanged(Location location) {
+		    	if(isFirstUpdate) {
+		    		Toast.makeText(getApplicationContext(), "Location detected", Toast.LENGTH_LONG).show();
+		    		isFirstUpdate = false;
+		    	}
+		    	new SendTask().execute("updateStatus", location.getLatitude(), loc.getLongitude(), status);
 		        new SendTask().execute("updatePosition", location.getLatitude(), location.getLongitude());
 		    }
 

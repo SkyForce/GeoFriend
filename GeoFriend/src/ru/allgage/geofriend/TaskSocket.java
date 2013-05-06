@@ -15,8 +15,7 @@ public class TaskSocket {
 	
 	public TaskSocket() {
 		try {
-			socket = new Socket("fornever.no-ip.org", 7777);
-			//socket = new Socket("80.78.247.173",7777);
+			socket = new Socket("localhost", 7777);
 			socket.setKeepAlive(true);
 			in = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());

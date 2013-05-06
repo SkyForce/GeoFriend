@@ -35,7 +35,6 @@ public class LoginTask extends AsyncTask<String, String, String> {
 			sock.log = str[0];
 			sock.pass = str[1];
 			sock.writeAuth();
-			//sock = new Socket("192.168.1.102", 7777);
 			din = sock.in;
 			publishProgress("sending data to server");
 			if(str.length == 2) {
