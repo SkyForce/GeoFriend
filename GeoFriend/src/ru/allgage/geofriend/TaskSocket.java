@@ -15,7 +15,7 @@ public class TaskSocket {
 	
 	public TaskSocket() {
 		try {
-			socket = new Socket("localhost", 7777);
+			socket = new Socket("192.168.1.104", 7777);
 			socket.setKeepAlive(true);
 			in = new DataInputStream(socket.getInputStream());
 			out = new DataOutputStream(socket.getOutputStream());

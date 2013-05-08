@@ -70,7 +70,7 @@ public class MapActivity extends FragmentActivity {
 		    		Toast.makeText(getApplicationContext(), "Location detected", Toast.LENGTH_LONG).show();
 		    		isFirstUpdate = false;
 		    	}
-		    	new SendTask().execute("updateStatus", location.getLatitude(), loc.getLongitude(), status);
+		    	//new SendTask().execute("updateStatus", location.getLatitude(), location.getLongitude(), status);
 		        new SendTask().execute("updatePosition", location.getLatitude(), location.getLongitude());
 		    }
 
